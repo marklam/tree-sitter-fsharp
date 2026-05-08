@@ -1221,6 +1221,7 @@ module.exports = grammar({
           $.flexible_type,
           $.anon_record_type,
           $.struct_type,
+          $.byref_type,
         ),
       ),
 
@@ -1243,6 +1244,7 @@ module.exports = grammar({
           $.flexible_type,
           $.anon_record_type,
           $.struct_type,
+          $.byref_type,
         ),
       ),
 
@@ -1292,6 +1294,10 @@ module.exports = grammar({
     measure: ($) => choice($.measure_quotient, $.measure_power, seq("(", $.measure, ")")),
 
     simple_type: ($) => choice($.long_identifier, $._static_type_identifier),
+    // F# byref type: `T&` is shorthand for `byref<T>`. Common in extern
+    // bindings interop'ing with native pointers / out-params, e.g.
+    // `extern bool F([<In>] PAINTSTRUCT& lpPaint)`.
+    byref_type: ($) => prec.left(5, seq($._type, token.immediate("&"))),
     generic_type: ($) =>
       prec.right(
         5,

@@ -4392,6 +4392,10 @@
           {
             "type": "SYMBOL",
             "name": "struct_type"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "byref_type"
           }
         ]
       }
@@ -4445,6 +4449,10 @@
           {
             "type": "SYMBOL",
             "name": "struct_type"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "byref_type"
           }
         ]
       }
@@ -4645,6 +4653,26 @@
           "name": "_static_type_identifier"
         }
       ]
+    },
+    "byref_type": {
+      "type": "PREC_LEFT",
+      "value": 5,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_type"
+          },
+          {
+            "type": "IMMEDIATE_TOKEN",
+            "content": {
+              "type": "STRING",
+              "value": "&"
+            }
+          }
+        ]
+      }
     },
     "generic_type": {
       "type": "PREC_RIGHT",

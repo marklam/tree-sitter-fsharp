@@ -4757,6 +4757,46 @@ extern int SendMessage(nativeint hWnd, int msg, nativeint wParam, nativeint lPar
       (identifier))))
 
 ================================================================================
+extern declaration with byref param and parameter attributes
+================================================================================
+
+[<DllImport("user32.dll")>]
+extern bool EndPaint(HWND hWnd, [<In>] PAINTSTRUCT& lpPaint)
+
+--------------------------------------------------------------------------------
+
+(file
+  (extern_binding
+    (attributes
+      (attribute
+        (simple_type
+          (long_identifier
+            (identifier)))
+        (paren_expression
+          (const
+            (string)))))
+    (simple_type
+      (long_identifier
+        (identifier)))
+    (identifier)
+    (extern_param
+      (simple_type
+        (long_identifier
+          (identifier)))
+      (identifier))
+    (extern_param
+      (attributes
+        (attribute
+          (simple_type
+            (long_identifier
+              (identifier)))))
+      (byref_type
+        (simple_type
+          (long_identifier
+            (identifier))))
+      (identifier))))
+
+================================================================================
 and! in computation expression
 ================================================================================
 
