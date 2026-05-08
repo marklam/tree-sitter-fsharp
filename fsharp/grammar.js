@@ -2254,7 +2254,16 @@ module.exports = grammar({
 
     ...preprocIf(
       "",
-      ($) => choice($._module_elem, alias($._preproc_toplevel_module, $.named_module)),
+      // Top-level `#if` block. The previous shape matched only a single
+      // `_module_elem` or one top-level module declaration; that's not enough
+      // for blocks wrapping more than one declaration, e.g.
+      // `#if false\nopen A\nopen B\n#endif` (common for cross-target stubs).
+      // Allow a repeat of module elements; the rare standalone toplevel-module
+      // form `#if X\nmodule M\n…#endif` is preserved as the alternative.
+      ($) => choice(
+        repeat1(seq(optional($._newline), $._module_elem)),
+        alias($._preproc_toplevel_module, $.named_module),
+      ),
     ),
     ...preprocIf(
       "_in_expression",

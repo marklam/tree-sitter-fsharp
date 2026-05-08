@@ -1,0 +1,90 @@
+================================================================================
+preproc_if false with multiple open declarations
+================================================================================
+
+namespace D
+
+open System
+
+#if false
+open Avalonia.Controls
+open Avalonia.FuncUI
+#endif
+
+--------------------------------------------------------------------------------
+
+(file
+  (namespace
+    (long_identifier
+      (identifier))
+    (import_decl
+      (long_identifier
+        (identifier)))
+    (preproc_if
+      (bool)
+      (import_decl
+        (long_identifier
+          (identifier)
+          (identifier)))
+      (import_decl
+        (long_identifier
+          (identifier)
+          (identifier))))))
+
+================================================================================
+preproc_if false with three declarations of mixed kinds
+================================================================================
+
+namespace D
+
+#if false
+open A
+open B
+let x = 1
+#endif
+
+--------------------------------------------------------------------------------
+
+(file
+  (namespace
+    (long_identifier
+      (identifier))
+    (preproc_if
+      (bool)
+      (import_decl
+        (long_identifier
+          (identifier)))
+      (import_decl
+        (long_identifier
+          (identifier)))
+      (declaration_expression
+        (function_or_value_defn
+          (value_declaration_left
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier))))
+          (const
+            (int)))))))
+
+================================================================================
+preproc_if false with single declaration (regression guard)
+================================================================================
+
+namespace D
+
+#if false
+open Avalonia.Controls
+#endif
+
+--------------------------------------------------------------------------------
+
+(file
+  (namespace
+    (long_identifier
+      (identifier))
+    (preproc_if
+      (bool)
+      (import_decl
+        (long_identifier
+          (identifier)
+          (identifier))))))
