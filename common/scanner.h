@@ -39,6 +39,14 @@ enum TokenType {
   PAREN_INDENT,
   TYPE_DECL_NEWLINE,
   IN,
+  // Dedent variant emitted when an infix operator at the same indent as
+  // the current scope follows the rules of a `match`/`function`
+  // expression. Distinguishes `(function | A -> a) >> g` (close the
+  // function, infix applies outwards) from `let x = a\n+ b` (extend
+  // expression). Only valid in `match_expression` / `function_expression`
+  // post-rules scoped wrapper, so valid_symbols lets us tell the contexts
+  // apart without needing parser-state introspection.
+  MATCH_PIPE_DEDENT,
   ERROR_SENTINEL
 };
 
@@ -1022,6 +1030,20 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
           lexer->result_symbol = NEWLINE;
           return true;
         }
+      }
+
+      // After the rules of a `match`/`function` expression, an infix
+      // operator at the SAME indent as the match scope means the infix
+      // applies to the whole match, not to the last arm's body. The
+      // grammar makes MATCH_PIPE_DEDENT valid only in those scopes, so
+      // we can safely emit it here without affecting let-body multi-line
+      // infix continuations.
+      if (indent_length == current_indent_length && indent_length > 0 &&
+          found_start_of_infix_op && !found_bracket_end &&
+          valid_symbols[MATCH_PIPE_DEDENT] && !valid_symbols[ERROR_SENTINEL]) {
+        pop_indent(scanner);
+        lexer->result_symbol = MATCH_PIPE_DEDENT;
+        return true;
       }
 
       bool can_dedent_preproc;

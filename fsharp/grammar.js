@@ -97,6 +97,12 @@ module.exports = grammar({
     $._paren_indent, // like _indent but pushes 0 onto indent stack for paren contexts
     $._type_decl_newline, // lookahead token: fires at newline/EOF when the next non-blank line is not more indented, used to match bare type declarations
     $._in, // external 'in' keyword token for let...in expressions; only produced when valid, so 'in' as identifier in query/CE contexts is unaffected
+    // DEDENT variant the scanner emits when an infix-op at the same indent
+    // as the match/function scope follows the rules. Lets `function | A -> a
+    // \n    >> g` close the function so `>>` applies outwards, while
+    // multi-line infix in let bodies (`let x = a\n    + b`) is unaffected
+    // because this token isn't valid there.
+    $._match_pipe_dedent,
 
     $._error_sentinel, // unused token to detect parser errors in external parser.
   ],
@@ -782,13 +788,22 @@ module.exports = grammar({
         $._expression,
         optional($._newline),
         "with",
-        choice(seq($._newline, $.rules), scoped($.rules, $._indent, $._dedent)),
+        choice(
+          seq($._newline, $.rules),
+          // Accept `_match_pipe_dedent` as an alternative to `_dedent` so
+          // a same-indent infix-op after the rules (e.g. `match x with | A
+          // -> a\n    >> g`) closes the match, letting `>>` apply outwards.
+          field("block", seq($._indent, $.rules, choice($._dedent, $._match_pipe_dedent))),
+        ),
       ),
 
     function_expression: ($) =>
       prec(
         PREC.MATCH_EXPR,
-        seq("function", scoped($.rules, $._indent, $._dedent)),
+        seq(
+          "function",
+          field("block", seq($._indent, $.rules, choice($._dedent, $._match_pipe_dedent))),
+        ),
       ),
 
     mutate_expression: ($) =>

@@ -3054,8 +3054,17 @@
                     "name": "rules"
                   },
                   {
-                    "type": "SYMBOL",
-                    "name": "_dedent"
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "SYMBOL",
+                        "name": "_dedent"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "_match_pipe_dedent"
+                      }
+                    ]
                   }
                 ]
               }
@@ -3089,8 +3098,17 @@
                   "name": "rules"
                 },
                 {
-                  "type": "SYMBOL",
-                  "name": "_dedent"
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "_dedent"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "_match_pipe_dedent"
+                    }
+                  ]
                 }
               ]
             }
@@ -10788,6 +10806,10 @@
     {
       "type": "SYMBOL",
       "name": "_in"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_match_pipe_dedent"
     },
     {
       "type": "SYMBOL",

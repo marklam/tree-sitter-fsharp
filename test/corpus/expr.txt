@@ -4757,6 +4757,38 @@ extern int SendMessage(nativeint hWnd, int msg, nativeint wParam, nativeint lPar
       (identifier))))
 
 ================================================================================
+function then >> at same indent as rules (compose with whole function)
+================================================================================
+
+let f =
+    function
+    | A -> a
+    >> g
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (infix_expression
+        (function_expression
+          (rules
+            (rule
+              (identifier_pattern
+                (long_identifier_or_op
+                  (identifier)))
+              (long_identifier_or_op
+                (identifier)))))
+        (infix_op)
+        (long_identifier_or_op
+          (long_identifier
+            (identifier)))))))
+
+================================================================================
 and! in computation expression
 ================================================================================
 
