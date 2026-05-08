@@ -1,0 +1,205 @@
+================================================================================
+single-line function with single wildcard arm
+================================================================================
+
+let f = function | _ -> 0
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (function_expression
+        (rules
+          (rule
+            (wildcard_pattern)
+            (const
+              (int))))))))
+
+================================================================================
+single-line function with two DU constructor arms
+================================================================================
+
+let f = function | Ok x -> x | Error _ -> 0
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (function_expression
+        (rules
+          (rule
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier))
+              (identifier_pattern
+                (long_identifier_or_op
+                  (identifier))))
+            (long_identifier_or_op
+              (identifier)))
+          (rule
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier))
+              (wildcard_pattern))
+            (const
+              (int))))))))
+
+================================================================================
+single-line function with three int-literal arms
+================================================================================
+
+let f = function | 1 -> true | 2 -> false | _ -> false
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (function_expression
+        (rules
+          (rule
+            (const
+              (int))
+            (const
+              (bool)))
+          (rule
+            (const
+              (int))
+            (const
+              (bool)))
+          (rule
+            (wildcard_pattern)
+            (const
+              (bool))))))))
+
+================================================================================
+single-line function inside parenthesised lambda in a pipeline
+================================================================================
+
+let xs = [1] |> List.choose (function | Some x -> Some x | None -> None)
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (application_expression
+        (infix_expression
+          (list_expression
+            (const
+              (int)))
+          (infix_op)
+          (long_identifier_or_op
+            (long_identifier
+              (identifier)
+              (identifier))))
+        (paren_expression
+          (function_expression
+            (rules
+              (rule
+                (identifier_pattern
+                  (long_identifier_or_op
+                    (identifier))
+                  (identifier_pattern
+                    (long_identifier_or_op
+                      (identifier))))
+                (application_expression
+                  (long_identifier_or_op
+                    (identifier))
+                  (long_identifier_or_op
+                    (identifier))))
+              (rule
+                (identifier_pattern
+                  (long_identifier_or_op
+                    (identifier)))
+                (long_identifier_or_op
+                  (identifier))))))))))
+
+================================================================================
+single-line function with type-check pattern
+================================================================================
+
+let f = function | :? T as a -> Some a | _ -> None
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (function_expression
+        (rules
+          (rule
+            (type_check_pattern
+              (atomic_type
+                (long_identifier
+                  (identifier)))
+              (identifier))
+            (application_expression
+              (long_identifier_or_op
+                (identifier))
+              (long_identifier_or_op
+                (identifier))))
+          (rule
+            (wildcard_pattern)
+            (long_identifier_or_op
+              (long_identifier
+                (identifier)))))))))
+
+================================================================================
+multi-line function form continues to parse correctly (regression guard)
+================================================================================
+
+let f =
+    function
+    | Ok x -> x
+    | Error _ -> 0
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (function_expression
+        (rules
+          (rule
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier))
+              (identifier_pattern
+                (long_identifier_or_op
+                  (identifier))))
+            (long_identifier_or_op
+              (identifier)))
+          (rule
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier))
+              (wildcard_pattern))
+            (const
+              (int))))))))

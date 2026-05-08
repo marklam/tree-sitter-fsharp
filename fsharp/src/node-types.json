@@ -1905,7 +1905,7 @@
     "fields": {
       "block": {
         "multiple": true,
-        "required": true,
+        "required": false,
         "types": [
           {
             "type": "rules",
@@ -1913,6 +1913,16 @@
           }
         ]
       }
+    },
+    "children": {
+      "multiple": false,
+      "required": false,
+      "types": [
+        {
+          "type": "rules",
+          "named": true
+        }
+      ]
     }
   },
   {

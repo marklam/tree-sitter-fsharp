@@ -113,6 +113,11 @@ module.exports = grammar({
     [$.prefixed_expression, $._low_prec_app, $.infix_expression],
     [$._type, $._argument_type],
     [$._type, $._curried_return_type],
+    // Nested inline `function` (e.g. `function | A -> function | _ -> 0 | B -> 1`):
+    // the trailing `|` could extend the inner rules or continue the outer ones.
+    // Greedy (extend inner) matches F# semantics — wrap the inner `function`
+    // in parens to bind the `|` to the outer rule list.
+    [$._inline_rules_with_bar],
   ],
 
   word: ($) => $.identifier,
@@ -788,7 +793,27 @@ module.exports = grammar({
     function_expression: ($) =>
       prec(
         PREC.MATCH_EXPR,
-        seq("function", scoped($.rules, $._indent, $._dedent)),
+        seq(
+          "function",
+          choice(
+            // Multi-line form opens an indented scope; rule bodies can be
+            // multi-line `_expression_block`s and patterns can disjunct
+            // (`function\n  | A\n  | B -> 1`).
+            scoped($.rules, $._indent, $._dedent),
+            // Inline form: rules on the same line as `function`. Bodies are
+            // single expressions and disjunct patterns need parens. Requires a
+            // leading `|` so tree-sitter's static analysis can disambiguate
+            // from the multi-line form (which uses scanner-emitted INDENT).
+            alias($._inline_rules_with_bar, $.rules),
+          ),
+        ),
+      ),
+
+    _inline_rules_with_bar: ($) =>
+      seq(
+        "|",
+        alias($._inline_rule_no_leading, $.rule),
+        repeat(seq("|", alias($._inline_rule_no_leading, $.rule))),
       ),
 
     mutate_expression: ($) =>
@@ -900,6 +925,47 @@ module.exports = grammar({
         optional("|"),
         $.rule,
         repeat(seq(optional($._newline), "|", $.rule)),
+      ),
+
+    // Single-line `function | A -> 1 | B -> 2` lacks the INDENT/DEDENT
+    // tokens that the regular `rule` form depends on. The inline rule used
+    // there has two key differences from `rule`:
+    //   1. Patterns can't disjunct across `|` (so each `|` belongs to the
+    //      next arm's separator). Use `(A | B)` to disjunct inline.
+    //   2. Body is a plain `_expression`, not `_expression_block`.
+    _inline_rule_no_leading: ($) =>
+      prec.right(
+        seq(
+          field("pattern", $._inline_pattern),
+          optional(seq("when", field("guard", $._expression))),
+          "->",
+          field("block", $._expression),
+        ),
+      ),
+
+    _inline_pattern: ($) =>
+      // Same as _pattern except disjunct_pattern is excluded — a bare `|` in
+      // single-line `function`/`match` rules is unambiguously the rule
+      // separator. Disjunct patterns must be parenthesised in inline form.
+      choice(
+        "null",
+        alias("_", $.wildcard_pattern),
+        $.typed_const_pattern,
+        $.const,
+        $.as_pattern,
+        $.conjunct_pattern,
+        $.cons_pattern,
+        $.repeat_pattern,
+        $.paren_pattern,
+        $.list_pattern,
+        $.array_pattern,
+        $.record_pattern,
+        $.typed_pattern,
+        $.attribute_pattern,
+        $.type_check_pattern,
+        $.optional_pattern,
+        $.identifier_pattern,
+        $.named_field_pattern,
       ),
 
     begin_end_expression: ($) =>
