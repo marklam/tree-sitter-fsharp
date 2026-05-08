@@ -787,7 +787,15 @@ module.exports = grammar({
         $._expression,
         optional($._newline),
         "with",
-        choice(seq($._newline, $.rules), scoped($.rules, $._indent, $._dedent)),
+        choice(
+          seq($._newline, $.rules),
+          scoped($.rules, $._indent, $._dedent),
+          // Inline form: rules on the same line as `with`. Bodies are single
+          // expressions and disjunct patterns need parens. Requires a leading
+          // `|` so tree-sitter can disambiguate from the multi-line forms
+          // (which depend on a `_newline` or scanner-emitted INDENT).
+          alias($._inline_rules_with_bar, $.rules),
+        ),
       ),
 
     function_expression: ($) =>

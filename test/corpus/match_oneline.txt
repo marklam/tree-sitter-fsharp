@@ -1,0 +1,216 @@
+================================================================================
+single-line match with single wildcard arm
+================================================================================
+
+let f x = match x with | _ -> 0
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (argument_patterns
+          (long_identifier
+            (identifier))))
+      (match_expression
+        (long_identifier_or_op
+          (identifier))
+        (rules
+          (rule
+            (wildcard_pattern)
+            (const
+              (int))))))))
+
+================================================================================
+single-line match with two DU constructor arms
+================================================================================
+
+let f x = match x with | Ok v -> v | Error _ -> 0
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (argument_patterns
+          (long_identifier
+            (identifier))))
+      (match_expression
+        (long_identifier_or_op
+          (identifier))
+        (rules
+          (rule
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier))
+              (identifier_pattern
+                (long_identifier_or_op
+                  (identifier))))
+            (long_identifier_or_op
+              (identifier)))
+          (rule
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier))
+              (wildcard_pattern))
+            (const
+              (int))))))))
+
+================================================================================
+single-line match with three int-literal arms
+================================================================================
+
+let f x = match x with | 1 -> true | 2 -> false | _ -> false
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (argument_patterns
+          (long_identifier
+            (identifier))))
+      (match_expression
+        (long_identifier_or_op
+          (identifier))
+        (rules
+          (rule
+            (const
+              (int))
+            (const
+              (bool)))
+          (rule
+            (const
+              (int))
+            (const
+              (bool)))
+          (rule
+            (wildcard_pattern)
+            (const
+              (bool))))))))
+
+================================================================================
+single-line match with type-check pattern and as-binding
+================================================================================
+
+let f x = match x with | :? T as a -> Some a | _ -> None
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (argument_patterns
+          (long_identifier
+            (identifier))))
+      (match_expression
+        (long_identifier_or_op
+          (identifier))
+        (rules
+          (rule
+            (type_check_pattern
+              (atomic_type
+                (long_identifier
+                  (identifier)))
+              (identifier))
+            (application_expression
+              (long_identifier_or_op
+                (identifier))
+              (long_identifier_or_op
+                (identifier))))
+          (rule
+            (wildcard_pattern)
+            (long_identifier_or_op
+              (long_identifier
+                (identifier)))))))))
+
+================================================================================
+single-line match with tuple pattern
+================================================================================
+
+let f v = match Int32.TryParse(v) with | true, n -> Some n | _ -> None
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (argument_patterns
+          (long_identifier
+            (identifier))))
+      (match_expression
+        (application_expression
+          (long_identifier_or_op
+            (long_identifier
+              (identifier)
+              (identifier)))
+          (long_identifier_or_op
+            (identifier)))
+        (rules
+          (rule
+            (repeat_pattern
+              (const
+                (bool))
+              (identifier_pattern
+                (long_identifier_or_op
+                  (identifier))))
+            (application_expression
+              (long_identifier_or_op
+                (identifier))
+              (long_identifier_or_op
+                (identifier))))
+          (rule
+            (wildcard_pattern)
+            (long_identifier_or_op
+              (long_identifier
+                (identifier)))))))))
+
+================================================================================
+multi-line match form continues to parse correctly (regression guard)
+================================================================================
+
+let f x =
+    match x with
+    | Ok v -> v
+    | Error _ -> 0
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (argument_patterns
+          (long_identifier
+            (identifier))))
+      (match_expression
+        (long_identifier_or_op
+          (identifier))
+        (rules
+          (rule
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier))
+              (identifier_pattern
+                (long_identifier_or_op
+                  (identifier))))
+            (long_identifier_or_op
+              (identifier)))
+          (rule
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier))
+              (wildcard_pattern))
+            (const
+              (int))))))))
