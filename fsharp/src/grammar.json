@@ -9791,6 +9791,13 @@
         "value": "\\/\\/\\/([^/\\n\\r][^\\n\\r]*)?"
       }
     },
+    "shebang": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "#![^\\n]*\\n"
+      }
+    },
     "compiler_directive_decl": {
       "type": "PREC",
       "value": 100000,
@@ -9819,6 +9826,15 @@
                   {
                     "type": "SYMBOL",
                     "name": "int"
+                  },
+                  {
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "SYMBOL",
+                      "name": "identifier"
+                    },
+                    "named": true,
+                    "value": "warning_code"
                   }
                 ]
               },
@@ -9880,7 +9896,12 @@
               "value": "#time"
             },
             {
-              "type": "STRING",
+              "type": "ALIAS",
+              "content": {
+                "type": "SYMBOL",
+                "name": "_hash_I_directive"
+              },
+              "named": false,
               "value": "#I"
             },
             {
@@ -9924,6 +9945,13 @@
           "value": "\\n"
         }
       ]
+    },
+    "_hash_I_directive": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "#I[ \\t]"
+      }
     },
     "preproc_line": {
       "type": "SEQ",
@@ -10603,6 +10631,10 @@
     {
       "type": "SYMBOL",
       "name": "fsi_directive_decl"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "shebang"
     },
     {
       "type": "STRING",

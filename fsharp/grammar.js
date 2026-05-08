@@ -58,6 +58,8 @@ module.exports = grammar({
     $.preproc_line,
     $.compiler_directive_decl,
     $.fsi_directive_decl,
+    // `#!/usr/bin/env -S dotnet fsi` shebang lines on .fsx scripts.
+    $.shebang,
     ";",
   ],
 
@@ -2205,13 +2207,26 @@ module.exports = grammar({
     xml_doc: (_) => token(/\/\/\/([^/\n\r][^\n\r]*)?/),
 
     // preprocessors
+    // Shebang on a .fsx script: `#!` plus everything to end-of-line. Recognised
+    // anywhere via `extras`; F# only allows it on line 1 of an .fsx script in
+    // practice but treating it as a free-floating extra is safe.
+    shebang: (_) => token(/#![^\n]*\n/),
+
     compiler_directive_decl: ($) =>
       prec(
         100000,
         choice(
           seq(
             "#nowarn",
-            choice(alias($._string_literal, $.string), $.int),
+            // `#nowarn` accepts a quoted code (`"FS0044"` or `"44"`), an int
+            // (`44`), or a bare warning-code identifier (`FS0044`). The bare
+            // form is widely used in modern F# sources for nullness warnings
+            // and obsolete-API suppression.
+            choice(
+              alias($._string_literal, $.string),
+              $.int,
+              alias($.identifier, $.warning_code),
+            ),
             $._newline_not_aligned,
           ),
           seq("#warnon", $.int, $._newline_not_aligned),
@@ -2221,10 +2236,21 @@ module.exports = grammar({
 
     fsi_directive_decl: ($) =>
       seq(
-        choice("#r", "#load", "#time", "#I", "#help", "#quit"),
+        choice(
+          "#r",
+          "#load",
+          "#time",
+          // `#I ` (with trailing whitespace required) so that `#IFoo` —
+          // a flexible type referring to an interface starting with capital
+          // `I`, e.g. `#IDisposable` — isn't claimed by the directive token.
+          alias($._hash_I_directive, "#I"),
+          "#help",
+          "#quit",
+        ),
         optional(choice(alias($._string_literal, $.string), $.verbatim_string)),
         /\n/,
       ),
+    _hash_I_directive: (_) => token(/#I[ \t]/),
 
     preproc_line: ($) =>
       seq(

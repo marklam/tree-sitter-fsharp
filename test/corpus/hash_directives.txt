@@ -1,0 +1,214 @@
+================================================================================
+nowarn with bare FS warning code
+================================================================================
+
+#nowarn FS0044
+
+let x = 1
+
+--------------------------------------------------------------------------------
+
+(file
+  (compiler_directive_decl
+    (warning_code))
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (const
+        (int)))))
+
+================================================================================
+nowarn with bare FS code and trailing comment
+================================================================================
+
+#nowarn FS3261 // some warning text
+
+let x = 1
+
+--------------------------------------------------------------------------------
+
+(file
+  (compiler_directive_decl
+    (warning_code)
+    (line_comment))
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (const
+        (int)))))
+
+================================================================================
+nowarn with quoted FS code (regression guard)
+================================================================================
+
+#nowarn "FS0044"
+
+let x = 1
+
+--------------------------------------------------------------------------------
+
+(file
+  (compiler_directive_decl
+    (string))
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (const
+        (int)))))
+
+================================================================================
+shebang line for dotnet fsi
+================================================================================
+
+#!/usr/bin/env -S dotnet fsi
+
+let x = 1
+
+--------------------------------------------------------------------------------
+
+(file
+  (shebang)
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (const
+        (int)))))
+
+================================================================================
+shebang line variant without -S flag
+================================================================================
+
+#!/usr/bin/env dotnet fsi
+
+let x = 1
+
+--------------------------------------------------------------------------------
+
+(file
+  (shebang)
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (const
+        (int)))))
+
+================================================================================
+flexible type starting with capital I (does not collide with #I directive)
+================================================================================
+
+let f (a : #IDisposable) = ()
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (argument_patterns
+          (typed_pattern
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier)))
+            (flexible_type
+              (simple_type
+                (long_identifier
+                  (identifier)))))))
+      (const
+        (unit)))))
+
+================================================================================
+flexible type with capital I and generic args
+================================================================================
+
+let f (a : #IReadOnlyList<'t>) = ()
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (argument_patterns
+          (typed_pattern
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier)))
+            (flexible_type
+              (generic_type
+                (long_identifier
+                  (identifier))
+                (type_attributes
+                  (type_attribute
+                    (type_argument
+                      (identifier)))))))))
+      (const
+        (unit)))))
+
+================================================================================
+flexible type with capital I in active pattern parameter
+================================================================================
+
+let inline (|Foo|) (env : #IFoo) = Foo env
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (active_pattern
+          (active_pattern_op_name))
+        (argument_patterns
+          (typed_pattern
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier)))
+            (flexible_type
+              (simple_type
+                (long_identifier
+                  (identifier)))))))
+      (application_expression
+        (long_identifier_or_op
+          (identifier))
+        (long_identifier_or_op
+          (long_identifier
+            (identifier)))))))
+
+================================================================================
+#I directive with quoted path (regression guard)
+================================================================================
+
+#I "./packages"
+
+let x = 1
+
+--------------------------------------------------------------------------------
+
+(file
+  (fsi_directive_decl
+    (string))
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (const
+        (int)))))

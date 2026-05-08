@@ -997,6 +997,10 @@
         {
           "type": "string",
           "named": true
+        },
+        {
+          "type": "warning_code",
+          "named": true
         }
       ]
     }
@@ -5267,6 +5271,11 @@
     "named": false
   },
   {
+    "type": "shebang",
+    "named": true,
+    "extra": true
+  },
+  {
     "type": "static",
     "named": false
   },
@@ -5329,6 +5338,10 @@
   {
     "type": "val",
     "named": false
+  },
+  {
+    "type": "warning_code",
+    "named": true
   },
   {
     "type": "when",
