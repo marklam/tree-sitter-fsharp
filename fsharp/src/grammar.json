@@ -4326,8 +4326,12 @@
           "name": "_slice_range_special"
         },
         {
-          "type": "SYMBOL",
-          "name": "_expression"
+          "type": "PREC",
+          "value": 17,
+          "content": {
+            "type": "SYMBOL",
+            "name": "_expression"
+          }
         },
         {
           "type": "STRING",

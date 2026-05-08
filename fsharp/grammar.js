@@ -1201,7 +1201,15 @@ module.exports = grammar({
         ),
       ),
 
-    slice_range: ($) => choice($._slice_range_special, $._expression, "*"),
+    slice_range: ($) =>
+      choice(
+        $._slice_range_special,
+        // Beat `tuple_expression` (PREC.TUPLE_EXPR = 16) at the SHIFT/REDUCE
+        // on `,` after a slice_range expression — otherwise `arr[i,*]` parses
+        // as a partial tuple `i, ?` which errors at `*`.
+        prec(PREC.TUPLE_EXPR + 1, $._expression),
+        "*",
+      ),
 
     //
     // Computation expression (END)
