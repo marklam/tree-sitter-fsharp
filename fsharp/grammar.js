@@ -1215,6 +1215,7 @@ module.exports = grammar({
           $.compound_type,
           $.postfix_type,
           $.list_type,
+          $.multi_dim_array_type,
           $.static_type,
           $.type_argument,
           $.constrained_type,
@@ -1237,6 +1238,7 @@ module.exports = grammar({
           $.paren_type,
           $.postfix_type,
           $.list_type,
+          $.multi_dim_array_type,
           $.static_type,
           $.type_argument,
           $.constrained_type,
@@ -1260,6 +1262,7 @@ module.exports = grammar({
           $.compound_type,
           $.postfix_type,
           $.list_type,
+          $.multi_dim_array_type,
           $.static_type,
           $.type_argument,
           $.constrained_type,
@@ -1304,6 +1307,10 @@ module.exports = grammar({
     struct_type: ($) => seq("struct", $.paren_type),
     postfix_type: ($) => prec.left(4, seq($._type, $.long_identifier)),
     list_type: ($) => seq($._type, "[]"),
+    // F# multi-dimensional array types: `int [,]` (2D), `int [,,]` (3D), etc.
+    // Each comma adds a dimension. `[]` (no commas) is a 1D `list_type`.
+    multi_dim_array_type: ($) =>
+      prec.left(4, seq($._type, "[", repeat1(","), "]")),
     static_type: ($) => prec(10, seq($._type, $.type_arguments)),
     constrained_type: ($) => prec.right(seq($.type_argument, ":>", $._type)),
     flexible_type: ($) => prec.right(seq("#", $._type)),

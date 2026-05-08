@@ -4371,6 +4371,10 @@
           },
           {
             "type": "SYMBOL",
+            "name": "multi_dim_array_type"
+          },
+          {
+            "type": "SYMBOL",
             "name": "static_type"
           },
           {
@@ -4421,6 +4425,10 @@
           {
             "type": "SYMBOL",
             "name": "list_type"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "multi_dim_array_type"
           },
           {
             "type": "SYMBOL",
@@ -4478,6 +4486,10 @@
           {
             "type": "SYMBOL",
             "name": "list_type"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "multi_dim_array_type"
           },
           {
             "type": "SYMBOL",
@@ -4792,6 +4804,34 @@
           "value": "[]"
         }
       ]
+    },
+    "multi_dim_array_type": {
+      "type": "PREC_LEFT",
+      "value": 4,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_type"
+          },
+          {
+            "type": "STRING",
+            "value": "["
+          },
+          {
+            "type": "REPEAT1",
+            "content": {
+              "type": "STRING",
+              "value": ","
+            }
+          },
+          {
+            "type": "STRING",
+            "value": "]"
+          }
+        ]
+      }
     },
     "static_type": {
       "type": "PREC",

@@ -308,6 +308,10 @@
         "named": true
       },
       {
+        "type": "multi_dim_array_type",
+        "named": true
+      },
+      {
         "type": "paren_type",
         "named": true
       },
@@ -615,6 +619,10 @@
         },
         {
           "type": "list_type",
+          "named": true
+        },
+        {
+          "type": "multi_dim_array_type",
           "named": true
         },
         {
@@ -1225,6 +1233,10 @@
         },
         {
           "type": "list_type",
+          "named": true
+        },
+        {
+          "type": "multi_dim_array_type",
           "named": true
         },
         {
@@ -2886,6 +2898,21 @@
         },
         {
           "type": "identifier",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "multi_dim_array_type",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "_type",
           "named": true
         }
       ]

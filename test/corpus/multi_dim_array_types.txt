@@ -1,0 +1,129 @@
+================================================================================
+2-dimensional array type
+================================================================================
+
+let f (xs: int [,]) = ()
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (argument_patterns
+          (typed_pattern
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier)))
+            (multi_dim_array_type
+              (simple_type
+                (long_identifier
+                  (identifier)))))))
+      (const
+        (unit)))))
+
+================================================================================
+3-dimensional array type
+================================================================================
+
+let f (xs: int [,,]) = ()
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (argument_patterns
+          (typed_pattern
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier)))
+            (multi_dim_array_type
+              (simple_type
+                (long_identifier
+                  (identifier)))))))
+      (const
+        (unit)))))
+
+================================================================================
+multi-dim array type without space before bracket
+================================================================================
+
+let f (xs: int[,]) = ()
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (argument_patterns
+          (typed_pattern
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier)))
+            (multi_dim_array_type
+              (simple_type
+                (long_identifier
+                  (identifier)))))))
+      (const
+        (unit)))))
+
+================================================================================
+multi-dim array of a generic type
+================================================================================
+
+let f (xs: List<int> [,]) = ()
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (argument_patterns
+          (typed_pattern
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier)))
+            (multi_dim_array_type
+              (generic_type
+                (long_identifier
+                  (identifier))
+                (type_attributes
+                  (type_attribute
+                    (simple_type
+                      (long_identifier
+                        (identifier))))))))))
+      (const
+        (unit)))))
+
+================================================================================
+1-dimensional array type still parses (regression guard)
+================================================================================
+
+let f (xs: int[]) = ()
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (argument_patterns
+          (typed_pattern
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier)))
+            (list_type
+              (simple_type
+                (long_identifier
+                  (identifier)))))))
+      (const
+        (unit)))))
