@@ -97,6 +97,12 @@ module.exports = grammar({
     $._paren_indent, // like _indent but pushes 0 onto indent stack for paren contexts
     $._type_decl_newline, // lookahead token: fires at newline/EOF when the next non-blank line is not more indented, used to match bare type declarations
     $._in, // external 'in' keyword token for let...in expressions; only produced when valid, so 'in' as identifier in query/CE contexts is unaffected
+    // Variant of `_interface_begin` for the implementation form
+    // `interface I with member …`. Scanner peeks past `interface` and emits
+    // this when the next significant char isn't a newline / `end`. Declared
+    // here for use by `interface_implementation`; preserves the existing
+    // `_interface_begin` token for the multi-line `interface … end` form.
+    $._interface_inline_keyword,
 
     $._error_sentinel, // unused token to detect parser errors in external parser.
   ],

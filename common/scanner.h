@@ -39,6 +39,14 @@ enum TokenType {
   PAREN_INDENT,
   TYPE_DECL_NEWLINE,
   IN,
+  // Variant of INTERFACE for the inline implementation form. Emitted when
+  // the scanner sees `interface` followed (after horizontal whitespace) by a
+  // type identifier (i.e. the implementation form `interface I with member …`)
+  // rather than by a newline / `end` (the block form `interface … end`).
+  // Letting the grammar branch on a different token rather than on a single
+  // INTERFACE keyword turns a structurally ambiguous choice (interface_type_defn
+  // vs anon_type_defn) into a statically disjoint one for the LR generator.
+  INTERFACE_INLINE,
   ERROR_SENTINEL
 };
 
@@ -716,18 +724,55 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
   {
     for (size_t i = 0; i < sizeof(block_openers) / sizeof(block_openers[0]); i++) {
       const BlockOpener *op = &block_openers[i];
-      if (valid_symbols[op->token] && lexer->lookahead == op->first_char) {
-        lexer->mark_end(lexer);
-        indent_length = lexer->get_column(lexer);
-        advance(lexer);
-        if (match_keyword_rest(lexer, op->rest)) {
-          lexer->mark_end(lexer);
-          lexer->result_symbol = op->token;
-          return true;
-        }
+      if (lexer->lookahead != op->first_char) continue;
+      // Both INTERFACE and INTERFACE_INLINE share `interface` as the keyword.
+      // Determine which (if either) is valid before matching, and for the
+      // shared interface case peek ahead after the keyword to disambiguate.
+      bool is_interface = (op->token == INTERFACE);
+      bool want_block  = is_interface ? valid_symbols[INTERFACE] : valid_symbols[op->token];
+      bool want_inline = is_interface && valid_symbols[INTERFACE_INLINE];
+      if (!want_block && !want_inline) continue;
+      lexer->mark_end(lexer);
+      indent_length = lexer->get_column(lexer);
+      advance(lexer);
+      if (!match_keyword_rest(lexer, op->rest)) {
         failed_block_opener = true;
         break;
       }
+      lexer->mark_end(lexer);
+      enum TokenType emit = op->token;
+      if (is_interface) {
+        // Peek past horizontal whitespace using `skip` so the consumed
+        // characters don't get attached to the emitted token. We only peek
+        // ONE significant character — see comment below.
+        while (lexer->lookahead == ' ' || lexer->lookahead == '\t') {
+          skip(lexer);
+        }
+        int32_t next = lexer->lookahead;
+        // Block form (`interface … end`) puts a newline between the keyword
+        // and the body, or `end` immediately after for the empty case. Other
+        // first characters (typically a type identifier like `IFoo`) indicate
+        // the implementation form. The `e` heuristic covers `end` without
+        // having to advance further (which would consume the keyword and
+        // leave the parser unable to see it).
+        bool block_form_likely =
+            next == '\n' || next == '\r' || next == 0 || next == 'e';
+        emit = block_form_likely ? INTERFACE : INTERFACE_INLINE;
+      }
+      // Final check: only emit if the chosen token is actually valid here.
+      if (!valid_symbols[emit]) {
+        // Fallback: if our chosen token isn't valid but the OTHER one is,
+        // emit the other one — the parser might still get something useful.
+        if (is_interface) {
+          if (emit == INTERFACE_INLINE && valid_symbols[INTERFACE]) emit = INTERFACE;
+          else if (emit == INTERFACE && valid_symbols[INTERFACE_INLINE]) emit = INTERFACE_INLINE;
+          else return false;  // neither valid → let literal `"interface"` win
+        } else {
+          return false;
+        }
+      }
+      lexer->result_symbol = emit;
+      return true;
     }
   }
 
