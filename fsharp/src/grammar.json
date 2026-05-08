@@ -5358,6 +5358,27 @@
               },
               {
                 "type": "STRING",
+                "value": "not"
+              },
+              {
+                "type": "STRING",
+                "value": "null"
+              }
+            ]
+          },
+          {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "type_argument"
+              },
+              {
+                "type": "STRING",
+                "value": ":"
+              },
+              {
+                "type": "STRING",
                 "value": "enum"
               },
               {

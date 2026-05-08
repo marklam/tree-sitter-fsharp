@@ -1,0 +1,163 @@
+================================================================================
+not null type-parameter constraint
+================================================================================
+
+let f<'k when 'k: not null> (x: 'k) = ()
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (type_arguments
+          (type_argument_defn
+            (type_argument
+              (identifier)))
+          (type_argument_constraints
+            (constraint
+              (type_argument
+                (identifier)))))
+        (argument_patterns
+          (typed_pattern
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier)))
+            (type_argument
+              (identifier)))))
+      (const
+        (unit)))))
+
+================================================================================
+not null constraint on type extension
+================================================================================
+
+type Dictionary<'k, 'v when 'k: not null> with
+    member this.F() = ()
+
+--------------------------------------------------------------------------------
+
+(file
+  (type_definition
+    (type_extension
+      (type_name
+        (long_identifier
+          (identifier))
+        (type_arguments
+          (type_argument_defn
+            (type_argument
+              (identifier)))
+          (type_argument_defn
+            (type_argument
+              (identifier)))
+          (type_argument_constraints
+            (constraint
+              (type_argument
+                (identifier))))))
+      (type_extension_elements
+        (member_defn
+          (method_or_prop_defn
+            (property_or_ident
+              (identifier)
+              (identifier))
+            (const
+              (unit))
+            (const
+              (unit))))))))
+
+================================================================================
+not null alongside other constraints
+================================================================================
+
+let f<'k when 'k: not null and 'k: equality> (x: 'k) = ()
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (type_arguments
+          (type_argument_defn
+            (type_argument
+              (identifier)))
+          (type_argument_constraints
+            (constraint
+              (type_argument
+                (identifier)))
+            (constraint
+              (type_argument
+                (identifier)))))
+        (argument_patterns
+          (typed_pattern
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier)))
+            (type_argument
+              (identifier)))))
+      (const
+        (unit)))))
+
+================================================================================
+null constraint still parses (regression guard)
+================================================================================
+
+let f<'k when 'k: null> (x: 'k) = ()
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (type_arguments
+          (type_argument_defn
+            (type_argument
+              (identifier)))
+          (type_argument_constraints
+            (constraint
+              (type_argument
+                (identifier)))))
+        (argument_patterns
+          (typed_pattern
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier)))
+            (type_argument
+              (identifier)))))
+      (const
+        (unit)))))
+
+================================================================================
+not struct constraint still parses (regression guard)
+================================================================================
+
+let f<'k when 'k: not struct> (x: 'k) = ()
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (type_arguments
+          (type_argument_defn
+            (type_argument
+              (identifier)))
+          (type_argument_constraints
+            (constraint
+              (type_argument
+                (identifier)))))
+        (argument_patterns
+          (typed_pattern
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier)))
+            (type_argument
+              (identifier)))))
+      (const
+        (unit)))))

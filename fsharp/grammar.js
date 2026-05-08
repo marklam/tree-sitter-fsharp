@@ -1385,6 +1385,9 @@ module.exports = grammar({
           ),
           seq($.type_argument, ":", "struct"),
           seq($.type_argument, ":", "not", "struct"),
+          // F# 9 nullable reference types: companion to `T | null`. Used as a
+          // type-parameter constraint, e.g. `'k when 'k: not null`.
+          seq($.type_argument, ":", "not", "null"),
           seq($.type_argument, ":", "enum", "<", $._type, ">"),
           seq($.type_argument, ":", "unmanaged"),
           seq($.type_argument, ":", "equality"),
