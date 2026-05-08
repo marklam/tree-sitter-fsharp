@@ -1703,6 +1703,16 @@ module.exports = grammar({
               scoped(repeat($._type_defn_elements), $._indent, $._dedent),
               "end",
             ),
+            // Inline interface implementation as the entire body, e.g.
+            // `type X = interface IFoo with member _.X = …`. The scoped
+            // form above needs an `_indent` token; for the inline (no
+            // newline before `interface`) case the scanner can't emit one
+            // and the scoped path fails. This direct alternative covers
+            // that case. Negative dynamic precedence so the regular scoped
+            // path wins whenever both could match — preserves the existing
+            // `(type_extension_elements (interface_implementation …))`
+            // wrapping for the multi-line form.
+            prec.dynamic(-1, $.interface_implementation),
           ),
         ),
       ),
@@ -1734,7 +1744,18 @@ module.exports = grammar({
       ),
 
     interface_implementation: ($) =>
-      prec.left(seq("interface", $._type, optional($._object_members))),
+      prec.left(seq(
+        // Accept both the literal `interface` keyword (matched by tree-sitter's
+        // built-in lexer when no external is in `valid_symbols` — common for
+        // inside object expressions, multi-line bodies, etc.) and the
+        // external `_interface_inline_keyword` (emitted by the scanner when
+        // it sees `interface` followed by a type identifier in a context
+        // where the inline implementation form is the structurally correct
+        // interpretation). Either spelling produces the same parse-tree node.
+        choice("interface", alias($._interface_inline_keyword, "interface")),
+        $._type,
+        optional($._object_members),
+      )),
 
     _member_defns: ($) =>
       prec.left(

@@ -1,0 +1,81 @@
+================================================================================
+inline interface implementation as type body
+================================================================================
+
+type X = interface IFoo with member _.X = 1
+
+--------------------------------------------------------------------------------
+
+(file
+  (type_definition
+    (anon_type_defn
+      (type_name
+        (identifier))
+      (interface_implementation
+        (simple_type
+          (long_identifier
+            (identifier)))
+        (member_defn
+          (method_or_prop_defn
+            (property_or_ident
+              (identifier)
+              (identifier))
+            (const
+              (int))))))))
+
+================================================================================
+inline interface implementation across newline (no `with` block scope)
+================================================================================
+
+type X =
+    interface IFoo with
+        member _.X = 1
+
+--------------------------------------------------------------------------------
+
+(file
+  (type_definition
+    (anon_type_defn
+      (type_name
+        (identifier))
+      (interface_implementation
+        (simple_type
+          (long_identifier
+            (identifier)))
+        (member_defn
+          (method_or_prop_defn
+            (property_or_ident
+              (identifier)
+              (identifier))
+            (const
+              (int))))))))
+
+================================================================================
+inline interface implementation with dotted type name
+================================================================================
+
+type X =
+    interface System.IDisposable with
+        member this.Dispose() = ()
+
+--------------------------------------------------------------------------------
+
+(file
+  (type_definition
+    (anon_type_defn
+      (type_name
+        (identifier))
+      (interface_implementation
+        (simple_type
+          (long_identifier
+            (identifier)
+            (identifier)))
+        (member_defn
+          (method_or_prop_defn
+            (property_or_ident
+              (identifier)
+              (identifier))
+            (const
+              (unit))
+            (const
+              (unit))))))))
