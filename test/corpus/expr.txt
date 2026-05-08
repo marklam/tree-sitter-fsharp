@@ -4757,6 +4757,34 @@ extern int SendMessage(nativeint hWnd, int msg, nativeint wParam, nativeint lPar
       (identifier))))
 
 ================================================================================
+generic type with dimensionless measure literal
+================================================================================
+
+let f (t : Point2<1>) = ()
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (argument_patterns
+          (typed_pattern
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier)))
+            (generic_type
+              (long_identifier
+                (identifier))
+              (type_attributes
+                (type_attribute
+                  (measure
+                    (measure_atom))))))))
+      (const
+        (unit)))))
+
+================================================================================
 and! in computation expression
 ================================================================================
 

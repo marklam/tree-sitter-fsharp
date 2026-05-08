@@ -1289,7 +1289,18 @@ module.exports = grammar({
 
     measure_quotient: ($) => prec.left(5, seq($._measure_operand, "/", $._measure_operand)),
 
-    measure: ($) => choice($.measure_quotient, $.measure_power, seq("(", $.measure, ")")),
+    measure: ($) =>
+      choice(
+        $.measure_quotient,
+        $.measure_power,
+        prec(2, seq("(", $.measure, ")")),
+        // Bare measure_atom — covers dimensionless `1` and simple measure
+        // identifiers in type-argument position, e.g. `Point2<1>`,
+        // `int<rt>`. Without this, `<1>` errors because the only paths
+        // to a bare "1" require it to be part of a quotient or power.
+        // Lower prec so existing parenthesized/quotient/power shapes win.
+        prec(-1, $.measure_atom),
+      ),
 
     simple_type: ($) => choice($.long_identifier, $._static_type_identifier),
     generic_type: ($) =>
