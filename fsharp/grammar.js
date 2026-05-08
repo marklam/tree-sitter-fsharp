@@ -1924,7 +1924,17 @@ module.exports = grammar({
       prec.left(
         seq(
           "inherit",
-          scoped(seq($._type, optional($._expression)), $._indent, $._dedent),
+          $._type,
+          // The constructor-args slot. F#'s `inherit T(args)` only accepts
+          // a parenthesised arg list or `()`, never an arbitrary expression
+          // — matching `_expression` here lets the body greedily absorb
+          // subsequent siblings (e.g. a following `do ()` line, or worse,
+          // a deeper-indented `override` block) as part of a synthetic
+          // `sequential_expression`. Restricting to literal-`()` (via the
+          // const rule) or a paren-expression bounds the slot to exactly
+          // what the spec allows. Using `const` here preserves the
+          // pre-existing tree shape `(const (unit))` for callers.
+          optional(choice($.const, $.paren_expression)),
         ),
       ),
 

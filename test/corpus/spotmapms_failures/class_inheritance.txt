@@ -1,0 +1,12 @@
+================================================================================
+:skip
+override after inherit() with deeper indent (PARTIAL — class_inherits_decl is wrapped in ERROR because the +8 INDENT after inherit obj() can't be consumed by _class_type_body, but the override line is still recovered as a member of type_extension_elements; remaining work would be to make the deeper-indent case parse without ERROR)
+================================================================================
+
+type App() =
+    inherit obj()
+        override this.ToString() = ""
+
+--------------------------------------------------------------------------------
+
+(file)
