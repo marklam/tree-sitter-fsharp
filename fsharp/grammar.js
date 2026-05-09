@@ -686,21 +686,38 @@ module.exports = grammar({
       ),
 
     prefixed_expression: ($) =>
-      seq(
-        choice(
-          "return",
-          "return!",
-          "yield",
-          "yield!",
-          "lazy",
-          "assert",
-          "upcast",
-          "downcast",
-          "new",
-          "fixed",
-          $.prefix_op,
+      choice(
+        seq(
+          choice(
+            "return",
+            "return!",
+            "yield",
+            "yield!",
+            "lazy",
+            "assert",
+            "upcast",
+            "downcast",
+            "new",
+            "fixed",
+            $.prefix_op,
+          ),
+          prec.right(PREC.PREFIX_EXPR, $._expression),
         ),
-        prec.right(PREC.PREFIX_EXPR, $._expression),
+        // F# constrained-generic instantiation: `new 'a()` /
+        // `new 'a(args)`. The body is a static_type_identifier (not a
+        // regular expression), so it doesn't fit the standard prefixed
+        // form; spell it out here.
+        prec.right(
+          PREC.PREFIX_EXPR,
+          seq(
+            "new",
+            alias($._static_type_identifier, $.simple_type),
+            choice(
+              $.unit,
+              seq("(", optional($._paren_expression_block), ")"),
+            ),
+          ),
+        ),
       ),
 
     typecast_expression: ($) =>

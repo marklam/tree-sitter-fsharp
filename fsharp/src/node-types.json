@@ -3194,6 +3194,14 @@
         {
           "type": "prefix_op",
           "named": true
+        },
+        {
+          "type": "simple_type",
+          "named": true
+        },
+        {
+          "type": "unit",
+          "named": true
         }
       ]
     }
