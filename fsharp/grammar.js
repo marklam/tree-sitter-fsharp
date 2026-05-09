@@ -360,6 +360,7 @@ module.exports = grammar({
       prec.left(
         2,
         seq(
+          optional("inline"),
           optional("mutable"),
           optional($.access_modifier),
           $._pattern,
