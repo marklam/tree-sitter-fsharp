@@ -831,11 +831,28 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
               lexer->result_symbol = DEDENT;
               return true;
             }
-          } else if ((la == '\n' || la == '\r' || la == 0) &&
-                     valid_symbols[WITH]) {
-            lexer->mark_end(lexer);
-            lexer->result_symbol = WITH;
-            return true;
+          } else if (la == '\n' || la == '\r' || la == 0) {
+            if (valid_symbols[WITH]) {
+              lexer->mark_end(lexer);
+              lexer->result_symbol = WITH;
+              return true;
+            }
+            // Line-end `with` where WITH isn't yet valid: peek past
+            // whitespace/newlines to look for a `|` — that's the try/match
+            // pattern-list form (`try foo\nwith\n| pat -> ...`) and the
+            // body needs DEDENTs popped until WITH becomes valid. For
+            // any other follow-up (e.g. `member`, `let`, `interface` —
+            // the type-extension forms), fall through and let the regular
+            // NEWLINE / DEDENT path handle the boundary.
+            while (lexer->lookahead == '\n' || lexer->lookahead == '\r' ||
+                   lexer->lookahead == ' ' || lexer->lookahead == '\t') {
+              advance(lexer);
+            }
+            if (lexer->lookahead == '|') {
+              pop_indent(scanner);
+              lexer->result_symbol = DEDENT;
+              return true;
+            }
           }
         }
       }
