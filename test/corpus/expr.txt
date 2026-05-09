@@ -4860,3 +4860,23 @@ let f (x: struct {| Name: string |}) = x
       (long_identifier_or_op
         (long_identifier
           (identifier))))))
+
+
+================================================================================
+multi-line string with CRLF (Windows source files)
+================================================================================
+
+let s = "line1
+line2"
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (const
+        (string)))))

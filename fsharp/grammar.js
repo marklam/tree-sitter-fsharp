@@ -1967,11 +1967,11 @@ module.exports = grammar({
         $._hexgraph_short,
       ),
 
-    // note: \n is allowed in strings
+    // note: \n and \r are allowed in strings (F# multi-line strings preserve CR/LF)
     _simple_string_char: ($) =>
       choice(
         $._inside_string_marker,
-        token.immediate(prec(1, /[^\t\r\u0008\a\f\v\\"]/)),
+        token.immediate(prec(1, /[^\t\u0008\a\f\v\\"]/)),
       ),
 
     _string_char: ($) =>

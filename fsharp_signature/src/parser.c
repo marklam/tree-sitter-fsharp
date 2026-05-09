@@ -18688,8 +18688,9 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       if (lookahead == '\\') ADVANCE(3);
       if (lookahead == '{') ADVANCE(725);
       if (lookahead == '\t' ||
-          (0x0b <= lookahead && lookahead <= '\r')) SKIP(97);
-      if (lookahead == '\n' ||
+          lookahead == 0x0b ||
+          lookahead == '\f') SKIP(97);
+      if (('\n' <= lookahead && lookahead <= '\r') ||
           lookahead == ' ' ||
           lookahead == ';' ||
           lookahead == 0x200b ||
@@ -18705,8 +18706,9 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       if (lookahead == '/') ADVANCE(721);
       if (lookahead == '\\') ADVANCE(3);
       if (lookahead == '\t' ||
-          (0x0b <= lookahead && lookahead <= '\r')) SKIP(97);
-      if (lookahead == '\n' ||
+          lookahead == 0x0b ||
+          lookahead == '\f') SKIP(97);
+      if (('\n' <= lookahead && lookahead <= '\r') ||
           lookahead == ' ' ||
           lookahead == ';' ||
           lookahead == 0x200b ||
@@ -21547,8 +21549,9 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       if (lookahead == '/') ADVANCE(721);
       if (lookahead == '\\') ADVANCE(3);
       if (lookahead == '\t' ||
-          (0x0b <= lookahead && lookahead <= '\r')) SKIP(97);
-      if (lookahead == '\n' ||
+          lookahead == 0x0b ||
+          lookahead == '\f') SKIP(97);
+      if (('\n' <= lookahead && lookahead <= '\r') ||
           lookahead == ' ' ||
           lookahead == ';' ||
           lookahead == 0x200b ||
@@ -21564,8 +21567,9 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       if (lookahead == '/') ADVANCE(721);
       if (lookahead == '\\') ADVANCE(731);
       if (lookahead == '\t' ||
-          (0x0b <= lookahead && lookahead <= '\r')) SKIP(183);
-      if (lookahead == '\n' ||
+          lookahead == 0x0b ||
+          lookahead == '\f') SKIP(183);
+      if (('\n' <= lookahead && lookahead <= '\r') ||
           lookahead == ' ' ||
           lookahead == ';' ||
           lookahead == 0x200b ||
@@ -21584,8 +21588,9 @@ static bool ts_lex(TSLexer *lexer, TSStateId state) {
       if (lookahead == '/') ADVANCE(721);
       if (lookahead == '\\') ADVANCE(731);
       if (lookahead == '\t' ||
-          (0x0b <= lookahead && lookahead <= '\r')) SKIP(183);
-      if (lookahead == '\n' ||
+          lookahead == 0x0b ||
+          lookahead == '\f') SKIP(183);
+      if (('\n' <= lookahead && lookahead <= '\r') ||
           lookahead == ' ' ||
           lookahead == ';' ||
           lookahead == 0x200b ||
@@ -763588,8 +763593,8 @@ TS_PUBLIC const TSLanguage *tree_sitter_fsharp_signature(void) {
     .max_reserved_word_set_size = 0,
     .metadata = {
       .major_version = 0,
-      .minor_version = 2,
-      .patch_version = 2,
+      .minor_version = 3,
+      .patch_version = 0,
     },
   };
   return &language;
