@@ -103,6 +103,13 @@ module.exports = grammar({
     // here for use by `interface_implementation`; preserves the existing
     // `_interface_begin` token for the multi-line `interface … end` form.
     $._interface_inline_keyword,
+    // Variant of `_indent` that only fires after a newline. Used by
+    // `class_inherits_decl` to absorb members indented further than the
+    // `inherit` line itself (an F# style: `type T() = \n  inherit B() \n
+    //     override _.M = ()`). Plain `_indent` would also be emitted by
+    // the scanner mid-line between `inherit B` and `(`, making `(` look
+    // like a sub-block opener instead of the args paren.
+    $._inherit_deep_indent,
 
     $._error_sentinel, // unused token to detect parser errors in external parser.
   ],
@@ -1935,6 +1942,18 @@ module.exports = grammar({
           // what the spec allows. Using `const` here preserves the
           // pre-existing tree shape `(const (unit))` for callers.
           optional(choice($.const, $.paren_expression)),
+          // F# allows class members to be indented further than `inherit`
+          // itself, e.g.
+          //     type T() =
+          //         inherit B()
+          //             override _.M = ()
+          // The scanner emits `_inherit_deep_indent` (newline-guarded INDENT)
+          // here when the next line is more indented than the inherit's
+          // scope, so the deeper members are absorbed as siblings of the
+          // inherit rather than dangling outside the body block.
+          optional(
+            seq($._inherit_deep_indent, $._type_extension_inner, $._dedent),
+          ),
         ),
       ),
 

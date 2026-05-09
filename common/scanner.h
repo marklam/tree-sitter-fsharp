@@ -47,6 +47,15 @@ enum TokenType {
   // INTERFACE keyword turns a structurally ambiguous choice (interface_type_defn
   // vs anon_type_defn) into a statically disjoint one for the LR generator.
   INTERFACE_INLINE,
+  // Variant of INDENT emitted only at end-of-line and only when the next
+  // line is more indented than the current scope. Unlike INDENT, this token
+  // is NOT emitted when there is no preceding newline — which lets the
+  // grammar place it after `class_inherits_decl` (`inherit T(args)`) without
+  // the scanner spuriously firing INDENT in the middle of `inherit B()`
+  // (where `(` should be parsed as the args paren). Pushes the deeper
+  // indentation onto the stack just like INDENT does, so the existing
+  // DEDENT logic closes the block when the indent decreases.
+  INHERIT_DEEP_INDENT,
   ERROR_SENTINEL
 };
 
@@ -1027,6 +1036,21 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
   if (valid_symbols[NEWLINE] && found_end_of_line_semi_colon &&
       !found_comment_start && !found_bracket_end) {
     lexer->result_symbol = NEWLINE;
+    return true;
+  }
+
+  // INHERIT_DEEP_INDENT: like INDENT but only fires after a newline and only
+  // when the next non-blank line is at a deeper indent than the current
+  // scope. Used to absorb the deeper-indented members that may follow
+  // `inherit T(args)` (see grammar.js class_inherits_decl) without making
+  // the regular INDENT path valid mid-line, where it would otherwise be
+  // emitted spuriously between `inherit B` and `(`.
+  if (valid_symbols[INHERIT_DEEP_INDENT] && !valid_symbols[ERROR_SENTINEL] &&
+      found_end_of_line && !found_bracket_end && !found_preprocessor_end &&
+      !found_same_line_pipe_infix && scanner->indents.size > 0 &&
+      indent_length > peek_indent_length(scanner)) {
+    push_indent(scanner, indent_length, false);
+    lexer->result_symbol = INHERIT_DEEP_INDENT;
     return true;
   }
 

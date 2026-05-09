@@ -8250,6 +8250,31 @@
                 "type": "BLANK"
               }
             ]
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "_inherit_deep_indent"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "_type_extension_inner"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "_dedent"
+                  }
+                ]
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
           }
         ]
       }
@@ -10779,6 +10804,10 @@
     {
       "type": "SYMBOL",
       "name": "_interface_inline_keyword"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_inherit_deep_indent"
     },
     {
       "type": "SYMBOL",

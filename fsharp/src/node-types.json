@@ -970,15 +970,27 @@
       "required": true,
       "types": [
         {
+          "type": "_expression",
+          "named": true
+        },
+        {
           "type": "_type",
           "named": true
         },
         {
-          "type": "const",
+          "type": "attributes",
           "named": true
         },
         {
-          "type": "paren_expression",
+          "type": "function_or_value_defn",
+          "named": true
+        },
+        {
+          "type": "interface_implementation",
+          "named": true
+        },
+        {
+          "type": "member_defn",
           "named": true
         }
       ]
