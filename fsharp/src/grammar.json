@@ -7014,15 +7014,6 @@
             "type": "CHOICE",
             "members": [
               {
-                "type": "ALIAS",
-                "content": {
-                  "type": "SYMBOL",
-                  "name": "inline_line_comment"
-                },
-                "named": true,
-                "value": "line_comment"
-              },
-              {
                 "type": "FIELD",
                 "name": "block",
                 "content": {

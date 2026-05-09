@@ -483,7 +483,7 @@
     "fields": {
       "block": {
         "multiple": true,
-        "required": false,
+        "required": true,
         "types": [
           {
             "type": "class_inherits_decl",
@@ -512,10 +512,6 @@
       "multiple": true,
       "required": true,
       "types": [
-        {
-          "type": "line_comment",
-          "named": true
-        },
         {
           "type": "primary_constr_args",
           "named": true

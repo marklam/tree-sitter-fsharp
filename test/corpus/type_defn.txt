@@ -359,7 +359,8 @@ type A() =
       (primary_constr_args))))
 
 ================================================================================
-comment-only empty class body
+:skip
+comment-only empty class body (no body — invalid F#, used to parse via inline_line_comment workaround which broke the common `type T = // c\n  body` shape)
 ================================================================================
 
 type NonComp() = //class end
