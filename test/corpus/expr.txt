@@ -4860,3 +4860,25 @@ let f (x: struct {| Name: string |}) = x
       (long_identifier_or_op
         (long_identifier
           (identifier))))))
+
+================================================================================
+format string with double-brace literal braces
+================================================================================
+
+let s = $"x {y} {{literal}} z"
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (const
+        (string
+          (format_string
+            (format_string_eval
+              (long_identifier_or_op
+                (identifier)))))))))

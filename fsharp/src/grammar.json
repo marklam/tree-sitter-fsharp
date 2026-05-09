@@ -8541,6 +8541,28 @@
             "type": "CHOICE",
             "members": [
               {
+                "type": "IMMEDIATE_TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": 2000,
+                  "content": {
+                    "type": "STRING",
+                    "value": "{{"
+                  }
+                }
+              },
+              {
+                "type": "IMMEDIATE_TOKEN",
+                "content": {
+                  "type": "PREC",
+                  "value": 2000,
+                  "content": {
+                    "type": "STRING",
+                    "value": "}}"
+                  }
+                }
+              },
+              {
                 "type": "SYMBOL",
                 "name": "format_string_eval"
               },

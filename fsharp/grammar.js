@@ -2000,7 +2000,18 @@ module.exports = grammar({
     format_string: ($) =>
       seq(
         token(prec(100, '$"')),
-        repeat(choice($.format_string_eval, $._string_char)),
+        repeat(
+          choice(
+            // `{{` and `}}` are literal `{` / `}` inside an interpolated
+            // string. Without these the `{{` triggers `format_string_eval`
+            // (its `{` has prec 1000) which then can't parse `{` as an
+            // expression and the whole string errors.
+            token.immediate(prec(2000, "{{")),
+            token.immediate(prec(2000, "}}")),
+            $.format_string_eval,
+            $._string_char,
+          ),
+        ),
         '"',
       ),
 
