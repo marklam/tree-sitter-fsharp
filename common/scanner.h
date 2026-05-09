@@ -54,6 +54,12 @@ enum TokenType {
   // the rhs of `&&` (`Y`) can't speculatively extend into `do_expression`
   // and strand the loop's `do`.
   LOOP_DO,
+  // The `(` that opens a function-application paren in `_high_prec_app`
+  // (`f(args)` with no whitespace before `(`). Distinct from the literal
+  // `(` so the scanner can refuse to fire when the next char is `*`,
+  // letting `Array(*.Concurrent*).choose` tokenize `(*` as a block
+  // comment instead of grabbing the bare `(` for paren-application.
+  HIGH_PREC_APP_PAREN,
   ERROR_SENTINEL
 };
 
@@ -472,6 +478,22 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
     } else {
       lexer->result_symbol = is_format ? FORMAT_TRIPLE_QUOTE_CONTENT : TRIPLE_QUOTE_CONTENT;
     }
+    return true;
+  }
+
+  if (valid_symbols[HIGH_PREC_APP_PAREN] && lexer->lookahead == '(') {
+    // Function-application paren after an identifier with no whitespace.
+    // Refuse to fire if the next char is `*` (block comment start) or `)`
+    // (standalone unit `()`) — let the internal lexer handle those instead.
+    // Anchor mark_end at `(` first so a return-false rewinds back to the
+    // `(` and the internal lexer sees `(*` / `()` from the start.
+    lexer->mark_end(lexer);
+    advance(lexer);
+    if (lexer->lookahead == '*' || lexer->lookahead == ')') {
+      return false;
+    }
+    lexer->mark_end(lexer);
+    lexer->result_symbol = HIGH_PREC_APP_PAREN;
     return true;
   }
 

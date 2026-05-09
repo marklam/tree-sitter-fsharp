@@ -3631,15 +3631,13 @@
                 "type": "SEQ",
                 "members": [
                   {
-                    "type": "IMMEDIATE_TOKEN",
+                    "type": "ALIAS",
                     "content": {
-                      "type": "PREC",
-                      "value": 10000,
-                      "content": {
-                        "type": "STRING",
-                        "value": "("
-                      }
-                    }
+                      "type": "SYMBOL",
+                      "name": "_high_prec_app_paren"
+                    },
+                    "named": false,
+                    "value": "("
                   },
                   {
                     "type": "SYMBOL",
@@ -10745,6 +10743,10 @@
     {
       "type": "SYMBOL",
       "name": "_loop_do"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_high_prec_app_paren"
     },
     {
       "type": "SYMBOL",

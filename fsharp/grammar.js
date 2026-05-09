@@ -107,6 +107,12 @@ module.exports = grammar({
     // valid in `while_expression` / `for_expression`, so the literal `do` of
     // `do_expression` in the condition's expression slot can't grab it.
     $._loop_do,
+    // `(` immediately after an identifier opening a function-application
+    // paren. Distinct from the literal `(` so the scanner can refuse to
+    // fire when `(*` (block comment start) follows — otherwise
+    // `Array(*.Concurrent*).choose` mis-tokenizes `(` as paren-app and the
+    // intended block comment never gets a chance.
+    $._high_prec_app_paren,
 
     $._error_sentinel, // unused token to detect parser errors in external parser.
   ],
@@ -937,7 +943,7 @@ module.exports = grammar({
           $._expression,
           choice(
             $.unit,
-            seq(token.immediate(prec(10000, "(")), $._paren_expression_block, ")"),
+            seq(alias($._high_prec_app_paren, "("), $._paren_expression_block, ")"),
           ),
         ),
       ),
