@@ -113,6 +113,11 @@ module.exports = grammar({
     [$.prefixed_expression, $._low_prec_app, $.infix_expression],
     [$._type, $._argument_type],
     [$._type, $._curried_return_type],
+    // typed_expression accepts both `types` (compatibility for the
+    // common `<T, U>` shape) and `type_attributes` (mixed measures /
+    // type names — `<1, 1, Model, Msg>`); the LR parser needs to defer
+    // until it sees a measure-literal token.
+    [$.types, $.type_attribute],
   ],
 
   word: ($) => $.identifier,
@@ -818,7 +823,15 @@ module.exports = grammar({
         seq(
           $._expression,
           $._tyapp_open,
-          optional(choice($.types, $.measure)),
+          // The original `choice(types, measure)` only accepted one or
+          // the other. F# allows mixed lists like `T<1, 1, Model, Msg>()`
+          // where the first two are dimensionless measures and the rest
+          // are type names. Add `type_attributes` (which supports the
+          // mixed form) alongside the existing `types`/`measure` arms.
+          // The dedicated `measure` form is kept for the leading-`/`
+          // (`</ m>`) shape that `type_attributes → type_attribute →
+          // measure` doesn't currently express.
+          optional(choice($.types, $.measure, $.type_attributes)),
           prec(PREC.PAREN_EXPR, ">"),
         ),
       ),

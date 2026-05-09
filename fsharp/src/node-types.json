@@ -4363,6 +4363,10 @@
           "named": true
         },
         {
+          "type": "type_attributes",
+          "named": true
+        },
+        {
           "type": "types",
           "named": true
         }
