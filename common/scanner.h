@@ -807,7 +807,18 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
         advance(lexer);
         if (lexer->lookahead == 'h') {
           advance(lexer);
-          if (lexer->lookahead == ' ') {
+          // Accept `with ` (space-following) and `with\n` / `with\r` /
+          // `with` at EOF — when `with` is the last token on its line
+          // (a common pattern for `try ...\nwith\n| pattern -> ...`),
+          // the lookahead is a line terminator rather than a space.
+          // For line-end `with`, only emit WITH when it's already valid;
+          // don't engage the DEDENT-popping branch here, since falling
+          // through to the regular NEWLINE/DEDENT path preserves the
+          // pre-existing handling for type-extension `with` blocks
+          // (where `with` sits at the type's indent and DEDENT-popping
+          // shouldn't be driven by the `with` keyword itself).
+          int32_t la = lexer->lookahead;
+          if (la == ' ') {
             // the 'WITH' token is only valid if we have popped the appropriate
             // amount of dedent tokens.
             // If 'WITH' is not valid we just continue to pop dedent tokens.
@@ -820,6 +831,11 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
               lexer->result_symbol = DEDENT;
               return true;
             }
+          } else if ((la == '\n' || la == '\r' || la == 0) &&
+                     valid_symbols[WITH]) {
+            lexer->mark_end(lexer);
+            lexer->result_symbol = WITH;
+            return true;
           }
         }
       }
