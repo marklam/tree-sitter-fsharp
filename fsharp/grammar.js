@@ -944,15 +944,13 @@ module.exports = grammar({
       ),
 
     _inline_pattern: ($) =>
-      // Same as _pattern except disjunct_pattern is excluded — a bare `|` in
-      // single-line `function`/`match` rules is unambiguously the rule
-      // separator. Disjunct patterns must be parenthesised in inline form.
       choice(
         "null",
         alias("_", $.wildcard_pattern),
         $.typed_const_pattern,
         $.const,
         $.as_pattern,
+        $.disjunct_pattern,
         $.conjunct_pattern,
         $.cons_pattern,
         $.repeat_pattern,

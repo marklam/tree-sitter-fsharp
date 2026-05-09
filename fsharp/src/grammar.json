@@ -3806,6 +3806,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "disjunct_pattern"
+        },
+        {
+          "type": "SYMBOL",
           "name": "conjunct_pattern"
         },
         {
