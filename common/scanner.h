@@ -859,9 +859,23 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
                 return true;
               } else {
                 lexer->mark_end(lexer);
+                // Peek past whitespace/newlines and remember the column the
+                // first non-whitespace char lands on. We'll use it to tell
+                // `else if` (same column as `else` → ELIF) from `else \n
+                // <indented> if` (deeper column → the else body starts with
+                // an `if` expression, NOT an elif chain).
+                bool saw_newline = false;
+                int16_t next_col = 0;
                 for (;;) {
-                  if (lexer->lookahead == ' ' || lexer->lookahead == '\n' ||
-                      lexer->lookahead == '\r' || lexer->lookahead == '\t') {
+                  if (lexer->lookahead == '\n' || lexer->lookahead == '\r') {
+                    saw_newline = true;
+                    next_col = 0;
+                    advance(lexer);
+                  } else if (lexer->lookahead == ' ') {
+                    next_col++;
+                    advance(lexer);
+                  } else if (lexer->lookahead == '\t') {
+                    next_col += 8;
                     advance(lexer);
                   } else {
                     break;
@@ -872,9 +886,16 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
                   if (lexer->lookahead == 'f') {
                     advance(lexer);
                     if (!is_word_char(lexer->lookahead)) {
-                      lexer->mark_end(lexer);
-                      lexer->result_symbol = ELIF;
-                      return true;
+                      // Treat as ELIF only when `if` is on the same line as
+                      // `else` OR at the same column as `else`. If `if` is
+                      // strictly indented past `else` after a newline, it's
+                      // the body of the else block, not an elif chain.
+                      bool is_elif = !saw_newline || next_col <= token_indent_level;
+                      if (is_elif) {
+                        lexer->mark_end(lexer);
+                        lexer->result_symbol = ELIF;
+                        return true;
+                      }
                     }
                   }
                 }
