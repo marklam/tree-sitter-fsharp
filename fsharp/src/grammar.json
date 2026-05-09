@@ -2697,8 +2697,22 @@
                 "type": "SEQ",
                 "members": [
                   {
-                    "type": "SYMBOL",
-                    "name": "identifier"
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "SYMBOL",
+                        "name": "identifier"
+                      },
+                      {
+                        "type": "ALIAS",
+                        "content": {
+                          "type": "STRING",
+                          "value": "_"
+                        },
+                        "named": true,
+                        "value": "wildcard_pattern"
+                      }
+                    ]
                   },
                   {
                     "type": "STRING",

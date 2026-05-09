@@ -717,7 +717,8 @@ module.exports = grammar({
           choice(
             seq($._pattern, "in", $._expression_or_range),
             seq(
-              $.identifier,
+              // F# allows `_` (wildcard) here for an ignored loop var.
+              choice($.identifier, alias("_", $.wildcard_pattern)),
               "=",
               $._expression,
               choice("to", "downto"),
