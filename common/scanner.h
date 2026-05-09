@@ -740,23 +740,41 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
   if (!failed_block_opener && !failed_at_sign_match) {
 
   if (valid_symbols[NEWLINE] && lexer->lookahead == ';') {
+    // Peek past `;` and trailing whitespace+line terminators to learn the
+    // next-line indent without committing yet. If the indent dropped below
+    // the current scope, emit DEDENT first (without consuming `;`) so the
+    // let-RHS / inner block closes; the next scan re-enters this handler
+    // (with `;` still as lookahead) and emits NEWLINE for the actual
+    // statement separator.
     advance(lexer);
-    // Consume trailing whitespace AND line terminators (\r as well as
-    // \n, so CRLF files behave the same as LF). Without `\r` here the
-    // `;` handler would stop at the bare `\r` and leave the `\r\n` to
-    // be re-scanned, which mis-counted the next line's indent for
-    // module-nested let bodies.
     while (lexer->lookahead == ' ' || lexer->lookahead == '\n' ||
            lexer->lookahead == '\r' || lexer->lookahead == '\t') {
       advance(lexer);
     }
+    uint32_t next_indent = lexer->get_column(lexer);
+    // Detect paren-bounded ancestor (`[| ... |]`, `( ... )`, `{| ... |}`):
+    // inside one, `;` separates elements at varying indent and must stay
+    // NEWLINE. The grammar uses `_indent` for `_list_element` so the top of
+    // the indent stack alone isn't sufficient — scan ancestors.
+    bool in_paren_bounded = false;
+    for (uint32_t i = 0; i < scanner->paren_indents.size; i++) {
+      if (*array_get(&scanner->paren_indents, i)) {
+        in_paren_bounded = true;
+        break;
+      }
+    }
+    if (valid_symbols[DEDENT] && scanner->indents.size > 0 &&
+        next_indent < peek_indent_length(scanner) &&
+        !in_paren_bounded) {
+      // Don't commit; mark_end stays at line 525, position rewinds. Emit
+      // DEDENT now and let the next scan handle the `;` itself.
+      pop_indent(scanner);
+      lexer->result_symbol = DEDENT;
+      return true;
+    }
     found_end_of_line = true;
     found_end_of_line_semi_colon = true;
-    // Update indent_length to the column of the next non-whitespace char so
-    // the DEDENT logic below can compare against the indent stack. Without
-    // this, `let x = 1;\n    let y = ...` keeps the let-RHS scope open and
-    // the next `let` is parsed as a sequential_expression continuation.
-    indent_length = lexer->get_column(lexer);
+    indent_length = next_indent;
     lexer->mark_end(lexer);
   }
 
@@ -992,15 +1010,8 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
 
   if (valid_symbols[NEWLINE] && found_end_of_line_semi_colon &&
       !found_comment_start && !found_bracket_end) {
-    // If the `;` is followed by a less-indented line, fall through to the
-    // DEDENT logic so the let-RHS / inner block closes before treating the
-    // next statement as a sequential continuation. Otherwise emit NEWLINE
-    // as the explicit-statement-separator.
-    if (scanner->indents.size == 0 ||
-        indent_length >= peek_indent_length(scanner)) {
-      lexer->result_symbol = NEWLINE;
-      return true;
-    }
+    lexer->result_symbol = NEWLINE;
+    return true;
   }
 
   if (valid_symbols[INDENT] && !valid_symbols[ERROR_SENTINEL] &&
