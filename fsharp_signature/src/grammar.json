@@ -2575,7 +2575,12 @@
             ]
           },
           {
-            "type": "STRING",
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_loop_do"
+            },
+            "named": false,
             "value": "do"
           },
           {
@@ -2621,7 +2626,12 @@
             "name": "_expression"
           },
           {
-            "type": "STRING",
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_loop_do"
+            },
+            "named": false,
             "value": "do"
           },
           {
@@ -2899,8 +2909,17 @@
                     "name": "rules"
                   },
                   {
-                    "type": "SYMBOL",
-                    "name": "_dedent"
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "SYMBOL",
+                        "name": "_dedent"
+                      },
+                      {
+                        "type": "SYMBOL",
+                        "name": "_match_pipe_dedent"
+                      }
+                    ]
                   }
                 ]
               }
@@ -2934,8 +2953,17 @@
                   "name": "rules"
                 },
                 {
-                  "type": "SYMBOL",
-                  "name": "_dedent"
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "_dedent"
+                    },
+                    {
+                      "type": "SYMBOL",
+                      "name": "_match_pipe_dedent"
+                    }
+                  ]
                 }
               ]
             }
@@ -10709,6 +10737,14 @@
     {
       "type": "SYMBOL",
       "name": "_in"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_match_pipe_dedent"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_loop_do"
     },
     {
       "type": "SYMBOL",

@@ -2730,7 +2730,12 @@
             ]
           },
           {
-            "type": "STRING",
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_loop_do"
+            },
+            "named": false,
             "value": "do"
           },
           {
@@ -2776,7 +2781,12 @@
             "name": "_expression"
           },
           {
-            "type": "STRING",
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_loop_do"
+            },
+            "named": false,
             "value": "do"
           },
           {
@@ -10810,6 +10820,10 @@
     {
       "type": "SYMBOL",
       "name": "_match_pipe_dedent"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_loop_do"
     },
     {
       "type": "SYMBOL",

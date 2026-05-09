@@ -47,6 +47,13 @@ enum TokenType {
   // post-rules scoped wrapper, so valid_symbols lets us tell the contexts
   // apart without needing parser-state introspection.
   MATCH_PIPE_DEDENT,
+  // The `do` keyword that terminates a while/for loop's condition.
+  // Distinct from the literal `do` of `do_expression` so the parser can
+  // anchor `while X && Y do BODY` correctly: at the boundary, the scanner
+  // emits LOOP_DO (only valid in while_expression / for_expression) so
+  // the rhs of `&&` (`Y`) can't speculatively extend into `do_expression`
+  // and strand the loop's `do`.
+  LOOP_DO,
   ERROR_SENTINEL
 };
 
@@ -781,6 +788,22 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
             }
           }
         }
+      }
+    }
+  } else if (lexer->lookahead == 'd' && valid_symbols[LOOP_DO]) {
+    // `do` after a while/for condition. Emitted only when LOOP_DO is in the
+    // valid set so the do_expression's leading `do` (which uses the literal)
+    // can never grab it speculatively. Without this, `while X && Y do BODY`
+    // mis-parses as `while X && app(Y, do_expression(do, BODY))` and the
+    // loop's `do` keyword is missing — see the comment on LOOP_DO in the
+    // enum.
+    advance(lexer);
+    if (lexer->lookahead == 'o') {
+      advance(lexer);
+      if (!is_word_char(lexer->lookahead)) {
+        lexer->mark_end(lexer);
+        lexer->result_symbol = LOOP_DO;
+        return true;
       }
     }
   } else if (lexer->lookahead == 'a' &&

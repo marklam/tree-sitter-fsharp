@@ -103,6 +103,10 @@ module.exports = grammar({
     // multi-line infix in let bodies (`let x = a\n    + b`) is unaffected
     // because this token isn't valid there.
     $._match_pipe_dedent,
+    // The `do` keyword that terminates a while/for loop's condition. Only
+    // valid in `while_expression` / `for_expression`, so the literal `do` of
+    // `do_expression` in the condition's expression slot can't grab it.
+    $._loop_do,
 
     $._error_sentinel, // unused token to detect parser errors in external parser.
   ],
@@ -730,7 +734,7 @@ module.exports = grammar({
               $._expression,
             ),
           ),
-          "do",
+          alias($._loop_do, "do"),
           $._expression_block,
           optional("done"),
         ),
@@ -742,7 +746,7 @@ module.exports = grammar({
         seq(
           choice("while", "while!"),
           $._expression,
-          "do",
+          alias($._loop_do, "do"),
           $._expression_block,
           optional("done"),
         ),
