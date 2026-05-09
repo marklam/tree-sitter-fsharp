@@ -1280,9 +1280,20 @@ module.exports = grammar({
 
     measure_power: ($) => prec.right(6, seq($.measure_atom, "^", $.int)),
 
+    // Space-separated measure atoms form a product: `a b c` ≡ `a * b * c`.
+    // F# allows this in measure positions (e.g. `Block<rebinned 'space rt
+    // bin, …>`). Note this is left-recursive on measure_atom to avoid
+    // ambiguity with single-atom measure.
+    measure_product: ($) =>
+      prec.left(
+        4,
+        seq($.measure_atom, $.measure_atom, repeat($.measure_atom)),
+      ),
+
     _measure_operand: ($) =>
       choice(
         $.measure_power,
+        $.measure_product,
         $.measure_atom,
         $.compound_type,
       ),
@@ -1293,6 +1304,7 @@ module.exports = grammar({
       choice(
         $.measure_quotient,
         $.measure_power,
+        $.measure_product,
         prec(2, seq("(", $.measure, ")")),
         // Bare measure_atom — covers dimensionless `1` and simple measure
         // identifiers in type-argument position, e.g. `Point2<1>`,

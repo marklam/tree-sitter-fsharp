@@ -2438,6 +2438,10 @@
           "named": true
         },
         {
+          "type": "measure_product",
+          "named": true
+        },
+        {
           "type": "measure_quotient",
           "named": true
         }
@@ -2487,6 +2491,21 @@
     }
   },
   {
+    "type": "measure_product",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "measure_atom",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "measure_quotient",
     "named": true,
     "fields": {},
@@ -2504,6 +2523,10 @@
         },
         {
           "type": "measure_power",
+          "named": true
+        },
+        {
+          "type": "measure_product",
           "named": true
         }
       ]

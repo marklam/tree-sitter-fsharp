@@ -4419,12 +4419,40 @@
         ]
       }
     },
+    "measure_product": {
+      "type": "PREC_LEFT",
+      "value": 4,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "measure_atom"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "measure_atom"
+          },
+          {
+            "type": "REPEAT",
+            "content": {
+              "type": "SYMBOL",
+              "name": "measure_atom"
+            }
+          }
+        ]
+      }
+    },
     "_measure_operand": {
       "type": "CHOICE",
       "members": [
         {
           "type": "SYMBOL",
           "name": "measure_power"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "measure_product"
         },
         {
           "type": "SYMBOL",
@@ -4469,21 +4497,37 @@
           "name": "measure_power"
         },
         {
-          "type": "SEQ",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "("
-            },
-            {
-              "type": "SYMBOL",
-              "name": "measure"
-            },
-            {
-              "type": "STRING",
-              "value": ")"
-            }
-          ]
+          "type": "SYMBOL",
+          "name": "measure_product"
+        },
+        {
+          "type": "PREC",
+          "value": 2,
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "("
+              },
+              {
+                "type": "SYMBOL",
+                "name": "measure"
+              },
+              {
+                "type": "STRING",
+                "value": ")"
+              }
+            ]
+          }
+        },
+        {
+          "type": "PREC",
+          "value": -1,
+          "content": {
+            "type": "SYMBOL",
+            "name": "measure_atom"
+          }
         }
       ]
     },
