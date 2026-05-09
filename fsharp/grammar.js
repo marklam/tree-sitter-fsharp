@@ -111,6 +111,12 @@ module.exports = grammar({
     [$.preproc_else_in_expression, $.preproc_else_in_module_body],
     [$.rules],
     [$.prefixed_expression, $._low_prec_app, $.infix_expression],
+    // Conflict introduced by bumping `prefix_op`'s inner-expression
+    // precedence above TUPLE_EXPR — needed so `%i, *` parses as a slice
+    // (not `%(i, *)`). At a `(` after `%i`, parser must defer the choice
+    // between `(%i) (args)` (high-prec app) and `%(i (args))` (prefix on
+    // app); the existing `_low_prec_app` conflict already exists below.
+    [$.prefixed_expression, $._high_prec_app, $._low_prec_app],
     [$._type, $._argument_type],
     [$._type, $._curried_return_type],
   ],
@@ -686,21 +692,37 @@ module.exports = grammar({
       ),
 
     prefixed_expression: ($) =>
-      seq(
-        choice(
-          "return",
-          "return!",
-          "yield",
-          "yield!",
-          "lazy",
-          "assert",
-          "upcast",
-          "downcast",
-          "new",
-          "fixed",
-          $.prefix_op,
+      choice(
+        // Keyword prefixes (return/yield/etc.) extend across commas — e.g.
+        // `yield 1, 2` yields a single tuple element. Inner `_expression`
+        // keeps PREFIX_EXPR precedence (15), below TUPLE_EXPR (16), so the
+        // `,` shifts into a `tuple_expression` continuation.
+        seq(
+          choice(
+            "return",
+            "return!",
+            "yield",
+            "yield!",
+            "lazy",
+            "assert",
+            "upcast",
+            "downcast",
+            "new",
+            "fixed",
+          ),
+          prec.right(PREC.PREFIX_EXPR, $._expression),
         ),
-        prec.right(PREC.PREFIX_EXPR, $._expression),
+        // Operator prefixes (%, +, -, +., -., &) bind tighter than `,` per
+        // F# operator precedence — `%i, 2` is `(%i), 2`, not `%(i, 2)`.
+        // Bumping the inner `_expression` precedence above TUPLE_EXPR (16)
+        // makes the parser reduce the prefix before shifting `,` into a
+        // tuple. Visible failure on rollup: `arr[%i, *]` (slice with `*`
+        // after a `%`-prefixed index) errored because `%` greedily ate
+        // `i, *` as a tuple, then `*` wasn't a valid expression.
+        seq(
+          $.prefix_op,
+          prec.right(PREC.TUPLE_EXPR + 1, $._expression),
+        ),
       ),
 
     typecast_expression: ($) =>
