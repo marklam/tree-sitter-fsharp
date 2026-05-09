@@ -732,7 +732,14 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
       bool want_block  = is_interface ? valid_symbols[INTERFACE] : valid_symbols[op->token];
       bool want_inline = is_interface && valid_symbols[INTERFACE_INLINE];
       if (!want_block && !want_inline) continue;
-      lexer->mark_end(lexer);
+      // Do NOT call mark_end here. If we partially consume the first letter
+      // and the keyword match fails, we want the next scan to re-see the
+      // whitespace + identifier from the position before the whitespace
+      // consume loop (the mark_end set at the very top of `scan`). Otherwise
+      // a failed block-opener match (e.g. lookahead `boolToHeight` failing
+      // `begin`) leaves mark_end at the start of the identifier, causing
+      // subsequent scans to skip the whitespace and lose the chance to
+      // emit further DEDENTs that depend on `found_end_of_line`.
       indent_length = lexer->get_column(lexer);
       advance(lexer);
       if (!match_keyword_rest(lexer, op->rest)) {
