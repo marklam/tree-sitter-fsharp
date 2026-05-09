@@ -3247,7 +3247,7 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "_indent"
+          "name": "_paren_indent"
         },
         {
           "type": "CHOICE",

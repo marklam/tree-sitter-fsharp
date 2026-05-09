@@ -859,7 +859,12 @@ module.exports = grammar({
 
     _list_element: ($) =>
       seq(
-        $._indent,
+        // `_paren_indent` instead of `_indent` because list/array literals
+        // (`[ ... ]`, `[| ... |]`) are bracket-bounded — the closing
+        // `]`/`|]` ends the scope, not indent. Without this, varying
+        // element indent (`[|\n     0.1; 1.1\n    14.1\n|]`) tripped a
+        // DEDENT mid-list and the trailing elements errored.
+        $._paren_indent,
         choice(
           $._list_elements,
           seq(optional($._newline), $._comp_or_range_expression),
