@@ -4860,3 +4860,40 @@ let f (x: struct {| Name: string |}) = x
       (long_identifier_or_op
         (long_identifier
           (identifier))))))
+
+================================================================================
+inline IL expression (FSharp.UMX-style cast)
+================================================================================
+
+let inline cast<'a, 'b> (a : 'a) : 'b =
+    (# "" a : 'b #)
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (type_arguments
+          (type_argument_defn
+            (type_argument
+              (identifier)))
+          (type_argument_defn
+            (type_argument
+              (identifier))))
+        (argument_patterns
+          (typed_pattern
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier)))
+            (type_argument
+              (identifier)))))
+      (type_argument
+        (identifier))
+      (inline_il_expression
+        (string)
+        (long_identifier_or_op
+          (identifier))
+        (type_argument
+          (identifier))))))

@@ -68,6 +68,10 @@
         "named": true
       },
       {
+        "type": "inline_il_expression",
+        "named": true
+      },
+      {
         "type": "list_expression",
         "named": true
       },
@@ -2154,6 +2158,50 @@
     "type": "infix_op",
     "named": true,
     "fields": {}
+  },
+  {
+    "type": "inline_il_expression",
+    "named": true,
+    "fields": {
+      "instruction": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "string",
+            "named": true
+          }
+        ]
+      },
+      "type": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "_type",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "const",
+          "named": true
+        },
+        {
+          "type": "long_identifier_or_op",
+          "named": true
+        },
+        {
+          "type": "paren_expression",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "int16",
@@ -4734,6 +4782,10 @@
     "named": false
   },
   {
+    "type": "#)",
+    "named": false
+  },
+  {
     "type": "#I",
     "named": false
   },
@@ -4819,6 +4871,10 @@
   },
   {
     "type": "(",
+    "named": false
+  },
+  {
+    "type": "(#",
     "named": false
   },
   {

@@ -580,6 +580,12 @@ module.exports = grammar({
         $.application_expression,
         $.dot_expression,
         alias($.preproc_if_in_expression, $.preproc_if),
+        // F# inline IL expression `(# "il-instr" args : type #)` (Section
+        // 6.5.4 of the spec). Used by libraries that need direct IL access,
+        // e.g. FSharp.UMX's `Unsafe.cast`:
+        //     let inline cast<'a, 'b> (a : 'a) : 'b = (# "" a : 'b #)
+        // Restricted by `#nowarn FS0042` at the file level.
+        $.inline_il_expression,
         $.srtp_call_expression,
       ),
 
@@ -604,6 +610,30 @@ module.exports = grammar({
           $._expression,
         ),
       ),
+
+    // F# inline IL expression: `(# "il-instructions" args : result-type #)`
+    // (F# spec Section 6.5.4). Used by libraries like FSharp.UMX for direct
+    // access to IL instructions. Opening `(#` and closing `#)` use
+    // higher-prec lexer tokens so they win over `#` (which the
+    // `preproc_line` extras rule's regex `/#(line)?/` would otherwise eat).
+    // Args are restricted to `_inline_il_arg` (identifier or literal) so
+    // the trailing `: type` isn't consumed by `typecast_expression` from
+    // the more general `_expression`.
+    inline_il_expression: ($) =>
+      prec(
+        PREC.PAREN_EXPR,
+        seq(
+          token(prec(100, "(#")),
+          field("instruction", $.string),
+          repeat($._inline_il_arg),
+          ":",
+          field("type", $._type),
+          token(prec(100, "#)")),
+        ),
+      ),
+
+    _inline_il_arg: ($) =>
+      choice($.long_identifier_or_op, $.const, $.paren_expression),
 
     // Like type_argument but restricted to ^-prefixed identifiers (not '-prefixed)
     // to avoid ambiguity with char literals in expression context.
