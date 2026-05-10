@@ -111,6 +111,12 @@ module.exports = grammar({
     [$.preproc_else_in_expression, $.preproc_else_in_module_body],
     [$.rules],
     [$.prefixed_expression, $._low_prec_app, $.infix_expression],
+    // After `function_or_value_defn` inside a `#if` body, the next `let`
+    // could either continue a `declaration_expression` chain (via and_bang
+    // / sequential let) or start another binding inside
+    // `preproc_if_partial_let`. Defer until the `#endif` boundary settles
+    // which interpretation applies.
+    [$.declaration_expression, $.preproc_if_partial_let],
     [$._type, $._argument_type],
     [$._type, $._curried_return_type],
   ],
@@ -580,6 +586,20 @@ module.exports = grammar({
         $.application_expression,
         $.dot_expression,
         alias($.preproc_if_in_expression, $.preproc_if),
+        // F# preprocesses at the token level, so a let-binding chain can
+        // be split across `#if/#else/#endif` with the body unconditional:
+        //     let logger =
+        //     #if DEBUG
+        //         let p = DebugLogger()
+        //     #else
+        //         let p = NullLogger()
+        //     #endif
+        //         p.CreateLogger()
+        // After preprocessing this is `let logger = let p = E in
+        // p.CreateLogger()` for either branch. The
+        // `preproc_let_split_expression` models the conditional binding
+        // followed by the always-present body expression.
+        $.preproc_let_split_expression,
         $.srtp_call_expression,
       ),
 
@@ -2272,6 +2292,23 @@ module.exports = grammar({
       -2,
     ),
     ...preprocIf("_in_member_definition", ($) => repeat($.member_defn), -2),
+
+    // Preproc-wrapped let-bindings. Body is one or more
+    // `function_or_value_defn`s — the lets are conditional but their
+    // shared body (in `preproc_let_split_expression`) is unconditional.
+    ...preprocIf(
+      "_partial_let",
+      ($) => repeat1(seq(optional($._newline), $.function_or_value_defn)),
+      -3,
+    ),
+
+    preproc_let_split_expression: ($) =>
+      prec.right(
+        seq(
+          alias($.preproc_if_partial_let, $.preproc_if),
+          field("in", $._expression),
+        ),
+      ),
   },
 });
 

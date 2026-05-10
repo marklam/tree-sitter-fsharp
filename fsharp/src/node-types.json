@@ -104,6 +104,10 @@
         "named": true
       },
       {
+        "type": "preproc_let_split_expression",
+        "named": true
+      },
+      {
         "type": "sequential_expression",
         "named": true
       },
@@ -3215,6 +3219,10 @@
           "named": true
         },
         {
+          "type": "function_or_value_defn",
+          "named": true
+        },
+        {
           "type": "named_module",
           "named": true
         },
@@ -3284,6 +3292,10 @@
         },
         {
           "type": "class_inherits_decl",
+          "named": true
+        },
+        {
+          "type": "function_or_value_defn",
           "named": true
         },
         {
@@ -3385,6 +3397,32 @@
         },
         {
           "type": "preproc_if_or_expression",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "preproc_let_split_expression",
+    "named": true,
+    "fields": {
+      "in": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "_expression",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "preproc_if",
           "named": true
         }
       ]

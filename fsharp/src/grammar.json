@@ -2184,6 +2184,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "preproc_let_split_expression"
+        },
+        {
+          "type": "SYMBOL",
           "name": "srtp_call_expression"
         }
       ]
@@ -10573,6 +10577,143 @@
           }
         ]
       }
+    },
+    "preproc_if_partial_let": {
+      "type": "PREC",
+      "value": -3,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "#if"
+          },
+          {
+            "type": "FIELD",
+            "name": "condition",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_preproc_expression"
+            }
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_newline_not_aligned"
+          },
+          {
+            "type": "REPEAT1",
+            "content": {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "_newline"
+                    },
+                    {
+                      "type": "BLANK"
+                    }
+                  ]
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "function_or_value_defn"
+                }
+              ]
+            }
+          },
+          {
+            "type": "FIELD",
+            "name": "alternative",
+            "content": {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "ALIAS",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "preproc_else_partial_let"
+                  },
+                  "named": true,
+                  "value": "preproc_else"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            }
+          },
+          {
+            "type": "STRING",
+            "value": "#endif"
+          }
+        ]
+      }
+    },
+    "preproc_else_partial_let": {
+      "type": "PREC",
+      "value": -3,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "#else"
+          },
+          {
+            "type": "REPEAT1",
+            "content": {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "_newline"
+                    },
+                    {
+                      "type": "BLANK"
+                    }
+                  ]
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "function_or_value_defn"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "preproc_let_split_expression": {
+      "type": "PREC_RIGHT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "preproc_if_partial_let"
+            },
+            "named": true,
+            "value": "preproc_if"
+          },
+          {
+            "type": "FIELD",
+            "name": "in",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_expression"
+            }
+          }
+        ]
+      }
     }
   },
   "extras": [
@@ -10645,6 +10786,10 @@
       "prefixed_expression",
       "_low_prec_app",
       "infix_expression"
+    ],
+    [
+      "declaration_expression",
+      "preproc_if_partial_let"
     ],
     [
       "_type",

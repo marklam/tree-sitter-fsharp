@@ -4860,3 +4860,53 @@ let f (x: struct {| Name: string |}) = x
       (long_identifier_or_op
         (long_identifier
           (identifier))))))
+
+================================================================================
+preproc_if let-split: conditional binding then unconditional body
+================================================================================
+
+let logger =
+#if DEBUG
+    let p = DebugLogger()
+#else
+    let p = NullLogger()
+#endif
+    p.CreateLogger()
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (preproc_let_split_expression
+        (preproc_if
+          (identifier)
+          (function_or_value_defn
+            (value_declaration_left
+              (identifier_pattern
+                (long_identifier_or_op
+                  (identifier))))
+            (application_expression
+              (long_identifier_or_op
+                (identifier))
+              (unit)))
+          (preproc_else
+            (function_or_value_defn
+              (value_declaration_left
+                (identifier_pattern
+                  (long_identifier_or_op
+                    (identifier))))
+              (application_expression
+                (long_identifier_or_op
+                  (identifier))
+                (unit)))))
+        (application_expression
+          (long_identifier_or_op
+            (long_identifier
+              (identifier)
+              (identifier)))
+          (unit))))))
