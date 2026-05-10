@@ -1804,7 +1804,13 @@ module.exports = grammar({
       ),
 
     property_accessor: ($) =>
-      seq(choice("get", "set"), $._property_accessor_body),
+      // Allow `private`/`internal`/`public` on the accessor itself —
+      // `member this.P with get () = ... and private set v = ...`.
+      seq(
+        optional($.access_modifier),
+        choice("get", "set"),
+        $._property_accessor_body,
+      ),
 
     _property_defn: ($) =>
       prec.left(
