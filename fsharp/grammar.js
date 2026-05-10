@@ -337,6 +337,10 @@ module.exports = grammar({
 
     _function_or_value_defn_body: ($) =>
       seq(
+        // F# allows `let [<Attr>] inline f x = ...` — attributes on the
+        // binding itself, in addition to the more common form
+        // `[<Attr>] let f x = ...` handled by `value_declaration`.
+        optional($.attributes),
         choice($.function_declaration_left, $.value_declaration_left),
         optional(seq(":", $._type)),
         optional($.type_argument_constraints),
