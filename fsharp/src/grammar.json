@@ -2871,36 +2871,40 @@
       ]
     },
     "if_expression": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "_if_branch"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "_then_expression"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
+      "type": "PREC",
+      "value": 18,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
             "type": "SYMBOL",
-            "name": "elif_expression"
-          }
-        },
-        {
-          "type": "CHOICE",
-          "members": [
-            {
+            "name": "_if_branch"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_then_expression"
+          },
+          {
+            "type": "REPEAT",
+            "content": {
               "type": "SYMBOL",
-              "name": "_else_expression"
-            },
-            {
-              "type": "BLANK"
+              "name": "elif_expression"
             }
-          ]
-        }
-      ]
+          },
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "_else_expression"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          }
+        ]
+      }
     },
     "fun_expression": {
       "type": "PREC_RIGHT",

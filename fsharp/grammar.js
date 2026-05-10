@@ -752,11 +752,24 @@ module.exports = grammar({
     _if_branch: ($) => seq("if", field("guard", $._expression_block)),
 
     if_expression: ($) =>
-      seq(
-        $._if_branch,
-        $._then_expression,
-        repeat($.elif_expression),
-        optional($._else_expression),
+      // Precedence above APP_EXPR so that an `if c then a else b` followed
+      // by another expression at a lower indent (the let/match in-body slot)
+      // is reduced to the if itself rather than shifted into a `_low_prec_app`
+      // (`(if-result) <next-expr>`). Without this, patterns like
+      //
+      //     let a = if c then "x" else ""
+      //     $"...{a}..."
+      //
+      // mis-parsed as `let a = (if c then "x" else "") $"..."` — the
+      // $-string was absorbed as an application argument of the if-result.
+      prec(
+        PREC.IF_EXPR,
+        seq(
+          $._if_branch,
+          $._then_expression,
+          repeat($.elif_expression),
+          optional($._else_expression),
+        ),
       ),
 
     fun_expression: ($) =>
