@@ -2258,17 +2258,32 @@ module.exports = grammar({
     ),
     ...preprocIf(
       "_in_expression",
-      ($) => repeat(seq(optional($._newline), $._expression)),
+      // Trailing optional NEWLINE so a body like `let a = 1;` (where `;` is
+      // the NEWLINE alias) followed by `#endif` parses cleanly without the
+      // parser trying to start another body element after the `;`.
+      ($) =>
+        seq(
+          repeat(seq(optional($._newline), $._expression)),
+          optional($._newline),
+        ),
       -2,
     ),
     ...preprocIf(
       "_in_module_body",
-      ($) => repeat(seq(optional($._newline), $._module_body_elem)),
+      ($) =>
+        seq(
+          repeat(seq(optional($._newline), $._module_body_elem)),
+          optional($._newline),
+        ),
       -2,
     ),
     ...preprocIf(
       "_in_class_definition",
-      ($) => repeat(seq(optional($._newline), $._class_type_body_inner)),
+      ($) =>
+        seq(
+          repeat(seq(optional($._newline), $._class_type_body_inner)),
+          optional($._newline),
+        ),
       -2,
     ),
     ...preprocIf("_in_member_definition", ($) => repeat($.member_defn), -2),
