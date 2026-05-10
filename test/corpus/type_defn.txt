@@ -3245,3 +3245,47 @@ type ``X Should``() =
                   (infix_op)
                   (const
                     (int)))))))))))
+
+================================================================================
+struct type with multiple inline interface implementations
+================================================================================
+
+[<Struct>]
+type T =
+    interface I1 with member _.A = ()
+    interface I2 with member _.B = ()
+
+--------------------------------------------------------------------------------
+
+(file
+  (type_definition
+    (attributes
+      (attribute
+        (simple_type
+          (long_identifier
+            (identifier)))))
+    (anon_type_defn
+      (type_name
+        (identifier))
+      (interface_implementation
+        (simple_type
+          (long_identifier
+            (identifier)))
+        (member_defn
+          (method_or_prop_defn
+            (property_or_ident
+              (identifier)
+              (identifier))
+            (const
+              (unit)))))
+      (interface_implementation
+        (simple_type
+          (long_identifier
+            (identifier)))
+        (member_defn
+          (method_or_prop_defn
+            (property_or_ident
+              (identifier)
+              (identifier))
+            (const
+              (unit))))))))

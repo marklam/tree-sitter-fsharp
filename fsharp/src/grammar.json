@@ -7165,8 +7165,11 @@
                 "type": "PREC_DYNAMIC",
                 "value": -1,
                 "content": {
-                  "type": "SYMBOL",
-                  "name": "interface_implementation"
+                  "type": "REPEAT1",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "interface_implementation"
+                  }
                 }
               }
             ]

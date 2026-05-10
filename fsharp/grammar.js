@@ -1712,7 +1712,17 @@ module.exports = grammar({
             // path wins whenever both could match — preserves the existing
             // `(type_extension_elements (interface_implementation …))`
             // wrapping for the multi-line form.
-            prec.dynamic(-1, $.interface_implementation),
+            //
+            // `repeat1` so a body with multiple inline ifaces (a common
+            // shape for struct-based dependency-injection types) parses:
+            //     [<Struct>]
+            //     type T =
+            //         interface I1 with member _.A = ()
+            //         interface I2 with member _.B = ()
+            // Without it the scanner emits INTERFACE_INLINE for each
+            // `interface` keyword and the second one has nowhere to
+            // attach (the inline alternative consumed only one).
+            prec.dynamic(-1, repeat1($.interface_implementation)),
           ),
         ),
       ),

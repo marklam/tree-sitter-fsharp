@@ -7014,6 +7014,17 @@
                     "value": "end"
                   }
                 ]
+              },
+              {
+                "type": "PREC_DYNAMIC",
+                "value": -1,
+                "content": {
+                  "type": "REPEAT1",
+                  "content": {
+                    "type": "SYMBOL",
+                    "name": "interface_implementation"
+                  }
+                }
               }
             ]
           }
@@ -7159,8 +7170,22 @@
         "type": "SEQ",
         "members": [
           {
-            "type": "STRING",
-            "value": "interface"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "interface"
+              },
+              {
+                "type": "ALIAS",
+                "content": {
+                  "type": "SYMBOL",
+                  "name": "_interface_inline_keyword"
+                },
+                "named": false,
+                "value": "interface"
+              }
+            ]
           },
           {
             "type": "SYMBOL",
@@ -10709,6 +10734,10 @@
     {
       "type": "SYMBOL",
       "name": "_in"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_interface_inline_keyword"
     },
     {
       "type": "SYMBOL",
