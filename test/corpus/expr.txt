@@ -4860,3 +4860,34 @@ let f (x: struct {| Name: string |}) = x
       (long_identifier_or_op
         (long_identifier
           (identifier))))))
+
+================================================================================
+preproc_if else-split: conditional if-then-else, body becomes else
+================================================================================
+
+let f =
+#if DEBUG
+    if x then a
+    else
+#endif
+        b
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (preproc_else_split_expression
+        (preproc_if
+          (identifier)
+          (long_identifier_or_op
+            (identifier))
+          (long_identifier_or_op
+            (identifier)))
+        (long_identifier_or_op
+          (long_identifier
+            (identifier)))))))

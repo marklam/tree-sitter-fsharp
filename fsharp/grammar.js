@@ -580,6 +580,19 @@ module.exports = grammar({
         $.application_expression,
         $.dot_expression,
         alias($.preproc_if_in_expression, $.preproc_if),
+        // F# preprocesses at the token level. An `if-then-else` can have
+        // its `else` keyword inside `#if` and the else-body outside, e.g.
+        //     let f =
+        //     #if DEBUG
+        //         if x then a
+        //         else
+        //     #endif
+        //             b
+        // After preprocessing this is `let f = if x then a else b`
+        // (DEBUG) or `let f = b`. The `preproc_else_split_expression`
+        // models the conditional `if-then-else-` combined with the
+        // unconditional body that becomes the else.
+        $.preproc_else_split_expression,
         $.srtp_call_expression,
       ),
 
@@ -2272,6 +2285,33 @@ module.exports = grammar({
       -2,
     ),
     ...preprocIf("_in_member_definition", ($) => repeat($.member_defn), -2),
+
+    // Partial `if cond then expr else` (no else body). Used as the body
+    // of `preproc_if_partial_if_else` when the else's body lives outside
+    // the `#endif` (see `preproc_else_split_expression`).
+    _partial_if_then_else: ($) =>
+      seq(
+        $._if_branch,
+        $._then_expression,
+        repeat($.elif_expression),
+        "else",
+      ),
+
+    // Preproc-wrapped `if-then-else-` whose else body lives outside the
+    // `#endif`. Body is the partial if-then-else (ending with `else`).
+    ...preprocIf(
+      "_partial_if_else",
+      ($) => seq(optional($._newline), $._partial_if_then_else),
+      -3,
+    ),
+
+    preproc_else_split_expression: ($) =>
+      prec.right(
+        seq(
+          alias($.preproc_if_partial_if_else, $.preproc_if),
+          field("else", $._expression),
+        ),
+      ),
   },
 });
 

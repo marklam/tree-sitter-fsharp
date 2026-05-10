@@ -100,6 +100,10 @@
         "named": true
       },
       {
+        "type": "preproc_else_split_expression",
+        "named": true
+      },
+      {
         "type": "preproc_if",
         "named": true
       },
@@ -3201,7 +3205,28 @@
   {
     "type": "preproc_else",
     "named": true,
-    "fields": {},
+    "fields": {
+      "guard": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "_expression",
+            "named": true
+          }
+        ]
+      },
+      "then": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "_expression",
+            "named": true
+          }
+        ]
+      }
+    },
     "children": {
       "multiple": true,
       "required": false,
@@ -3215,11 +3240,41 @@
           "named": true
         },
         {
+          "type": "elif_expression",
+          "named": true
+        },
+        {
           "type": "named_module",
           "named": true
         },
         {
           "type": "type_extension_elements",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
+    "type": "preproc_else_split_expression",
+    "named": true,
+    "fields": {
+      "else": {
+        "multiple": false,
+        "required": true,
+        "types": [
+          {
+            "type": "_expression",
+            "named": true
+          }
+        ]
+      }
+    },
+    "children": {
+      "multiple": false,
+      "required": true,
+      "types": [
+        {
+          "type": "preproc_if",
           "named": true
         }
       ]
@@ -3272,6 +3327,26 @@
             "named": true
           }
         ]
+      },
+      "guard": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "_expression",
+            "named": true
+          }
+        ]
+      },
+      "then": {
+        "multiple": false,
+        "required": false,
+        "types": [
+          {
+            "type": "_expression",
+            "named": true
+          }
+        ]
       }
     },
     "children": {
@@ -3284,6 +3359,10 @@
         },
         {
           "type": "class_inherits_decl",
+          "named": true
+        },
+        {
+          "type": "elif_expression",
           "named": true
         },
         {
