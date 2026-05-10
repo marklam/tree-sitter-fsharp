@@ -933,6 +933,19 @@ module.exports = grammar({
         PREC.DOT,
         seq(
           field("base", $._expression),
+          // Allow `#if X .Method() #endif` style preproc blocks to appear
+          // between the base and the next dot continuation. F# preprocesses
+          // at the token level, so a fluent-API chain like
+          //     foo.Bar()
+          // #if DEBUG
+          //     .Debug()
+          // #endif
+          //     .Baz()
+          // is valid: the `.Debug()` segment is included or excluded as a
+          // pure token-stream operation, leaving a well-formed chain in
+          // either direction. The `preproc_if_dot_chain` body holds the
+          // dot-continuation segments that would otherwise lack a base.
+          repeat(alias($.preproc_if_dot_chain, $.preproc_if)),
           ".",
           field("field", $.long_identifier_or_op),
         ),
@@ -951,6 +964,44 @@ module.exports = grammar({
         prec.left(
           PREC.SPECIAL_INFIX,
           seq($._expression, $.infix_op, $._expression),
+        ),
+        // F# preprocesses at the token level, so a multi-line infix chain
+        // can have op-expr segments wrapped in `#if`. E.g.
+        //     foo
+        // #if DEBUG
+        //     |> tee f
+        // #endif
+        //     |> Array.map g
+        // is equivalent to either `foo |> tee f |> Array.map g` (DEBUG) or
+        // `foo |> Array.map g`. Allow `preproc_if_infix_chain` between the
+        // LHS expression and the next operator, holding the conditional
+        // op-expr segments.
+        prec.left(
+          PREC.SPECIAL_INFIX,
+          seq(
+            $._expression,
+            alias($.preproc_if_infix_chain, $.preproc_if),
+            $.infix_op,
+            $._expression,
+          ),
+        ),
+        // Trailing-op pattern: the `#if` body ends with `expr op` and the
+        // RHS lives outside `#endif`, e.g.
+        //     let x =
+        //     #if DEBUG
+        //         [a]
+        //         @
+        //     #endif
+        //         [b]
+        // is `let x = [a] @ [b]` (DEBUG) or `let x = [b]`. The
+        // `preproc_if_infix_lhs` body holds `expr op` pairs ending with an
+        // operator, and the trailing expression provides the RHS.
+        prec.left(
+          PREC.SPECIAL_INFIX,
+          seq(
+            alias($.preproc_if_infix_lhs, $.preproc_if),
+            $._expression,
+          ),
         ),
       ),
 
@@ -2272,6 +2323,48 @@ module.exports = grammar({
       -2,
     ),
     ...preprocIf("_in_member_definition", ($) => repeat($.member_defn), -2),
+    // Preproc-wrapped dot-chain continuation segments. Each `_dot_chain_seg`
+    // is `.Method` (with optional `()` args). Used by `dot_expression` to
+    // absorb conditional fluent-API steps without needing a base inside the
+    // `#if`. Negative `prec` so a `#if` block whose body parses as a
+    // complete expression still picks `preproc_if_in_expression`.
+    ...preprocIf(
+      "_dot_chain",
+      ($) => repeat1(seq(optional($._newline), $._dot_chain_seg)),
+      -3,
+    ),
+
+    _dot_chain_seg: ($) =>
+      seq(
+        ".",
+        $.long_identifier_or_op,
+        // Match the parenless form (`.Field`), the empty-args form
+        // (`.Method()`), and the args form (`.Method(args)`).
+        optional(
+          choice(
+            $.unit,
+            seq("(", optional($._paren_expression_block), ")"),
+          ),
+        ),
+      ),
+
+    // Preproc-wrapped infix chain. Body is one or more `op expr` pairs that
+    // extend the surrounding chain. Used by `infix_expression` between LHS
+    // and the next operator.
+    ...preprocIf(
+      "_infix_chain",
+      ($) => repeat1(seq(optional($._newline), $.infix_op, $._expression)),
+      -3,
+    ),
+
+    // Preproc-wrapped LHS-with-trailing-op. Body is one or more `expr op`
+    // pairs, ending with an operator. Used by `infix_expression` when the
+    // op straddles the `#endif` and the RHS lives outside.
+    ...preprocIf(
+      "_infix_lhs",
+      ($) => repeat1(seq(optional($._newline), $._expression, $.infix_op)),
+      -3,
+    ),
   },
 });
 

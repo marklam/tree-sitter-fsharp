@@ -4860,3 +4860,113 @@ let f (x: struct {| Name: string |}) = x
       (long_identifier_or_op
         (long_identifier
           (identifier))))))
+
+================================================================================
+preproc_if dot-chain segment continues a fluent API chain
+================================================================================
+
+let x =
+    foo
+        .Bar()
+#if DEBUG
+        .Debug()
+#endif
+        .Baz()
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (application_expression
+        (dot_expression
+          (application_expression
+            (long_identifier_or_op
+              (long_identifier
+                (identifier)
+                (identifier)))
+            (unit))
+          (preproc_if
+            (identifier)
+            (long_identifier_or_op
+              (identifier))
+            (unit))
+          (long_identifier_or_op
+            (identifier)))
+        (unit)))))
+
+================================================================================
+preproc_if op-expr segment extends an infix chain
+================================================================================
+
+let x =
+    foo
+#if DEBUG
+    |> tee f
+#endif
+    |> Array.map g
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (application_expression
+        (infix_expression
+          (long_identifier_or_op
+            (identifier))
+          (preproc_if
+            (identifier)
+            (infix_op)
+            (application_expression
+              (long_identifier_or_op
+                (identifier))
+              (long_identifier_or_op
+                (identifier))))
+          (infix_op)
+          (long_identifier_or_op
+            (long_identifier
+              (identifier)
+              (identifier))))
+        (long_identifier_or_op
+          (long_identifier
+            (identifier)))))))
+
+================================================================================
+preproc_if expr-op trailing form supplies LHS of an infix expression
+================================================================================
+
+let x =
+#if DEBUG
+    [a]
+    @
+#endif
+    [b]
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (infix_expression
+        (preproc_if
+          (identifier)
+          (list_expression
+            (long_identifier_or_op
+              (identifier)))
+          (infix_op))
+        (list_expression
+          (long_identifier_or_op
+            (identifier)))))))
