@@ -1028,6 +1028,10 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
           !found_start_of_infix_op && !found_bracket_end) {
         if (valid_symbols[NEWLINE] && !found_preprocessor_end &&
             !found_comment_start) {
+          if (found_preproc_if) {
+            array_push(&scanner->preprocessor_indents,
+                       (uint16_t)indent_length);
+          }
           lexer->result_symbol = NEWLINE;
           return true;
         }
