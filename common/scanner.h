@@ -461,10 +461,18 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
   }
 
   if (valid_symbols[TYPE_DECL_NEWLINE]) {
-    // Only fire at EOF or newline; if the current character is something else
-    // (e.g. '=' during GLR exploration), fall through to general scanning —
-    // the lexer position is unchanged so this is safe.
+    // Only fire at EOF, newline, or `;`; if the current character is something
+    // else (e.g. '=' during GLR exploration), fall through to general scanning
+    // — the lexer position is unchanged so this is safe.
     if (lexer->eof(lexer)) {
+      lexer->result_symbol = TYPE_DECL_NEWLINE;
+      return true;
+    }
+    // `;` after a bare type declaration (`type [<Measure>] i;`) terminates
+    // the declaration just like a newline does. The `;` itself is consumed
+    // separately as an extra; the zero-width TYPE_DECL_NEWLINE only marks
+    // the boundary so the parser can reduce `type_declaration`.
+    if (lexer->lookahead == ';') {
       lexer->result_symbol = TYPE_DECL_NEWLINE;
       return true;
     }
