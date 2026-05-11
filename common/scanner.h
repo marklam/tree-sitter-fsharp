@@ -903,7 +903,12 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
       advance(lexer);
       if (lexer->lookahead == 'd') {
         advance(lexer);
-        if (lexer->lookahead == ' ') {
+        // Accept any non-word boundary after `and` (space, newline, tab,
+        // EOF, etc.). Previously only ' ' was checked, so a property-
+        // accessor `with get () = body and\n    set v = ...` with `and`
+        // at end of line couldn't emit AND (the next char was '\n', not
+        // ' '), and the internal lexer consumed `and` as an identifier.
+        if (!is_word_char(lexer->lookahead)) {
           // the 'AND' token is only valid if we have popped the appropriate
           // amount of dedent tokens.
           // If 'AND' is not valid we just continue to pop dedent tokens.
