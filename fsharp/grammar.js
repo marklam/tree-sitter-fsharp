@@ -2125,9 +2125,13 @@ module.exports = grammar({
           /[-+=<>|&^*'%@?][!%&*+./<=>@^|~?-]*/,
           /\/[!%&*+.<=>@^|~?-]*/,
           // Range-prefixed custom operators like `..>` (Hedgehog, etc).
-          // Requires >=1 trailing op char so the bare `..` range literal in
-          // range_expression isn't shadowed.
-          /\.\.[!%&*+/<=>@^|~?-]+/,
+          // Requires >=1 trailing op char. token(prec(...)) outranks the bare
+          // `..` literal used by range_expression (PREC.DOTDOT + 100000) so
+          // the longer `..>` match wins even where range syntax is valid.
+          // Excludes `|` from the trailing set so `..|]` (end-of-range in
+          // `xs[|0..|]`) still tokenizes as `..` + `|]` rather than `..|` +
+          // `]`.
+          token(prec(200000, /\.\.[!%&*+/<=>@^~?-]+/)),
           "=",
           "!=",
           ":=",
