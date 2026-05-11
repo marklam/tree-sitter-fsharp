@@ -2123,12 +2123,6 @@ module.exports = grammar({
           $._infix_or_prefix_op,
           token.immediate(prec(1, /[+-]/)),
           /[-+=<>|&^*'%@?][!%&*+./<=>@^|~?-]*/,
-          // F# also allows custom infix ops that start with `.` followed
-          // by at least one operator character (e.g. `.=`, `.&.`, `.<<`,
-          // used for record-update / bitwise overloads). Without this the
-          // identifier-start lexer grabs the `.` for a dot_expression and
-          // the parser can't form an infix.
-          /\.[!%&*+./<=>@^|~?-]+/,
           /\/[!%&*+.<=>@^|~?-]*/,
           "=",
           "!=",
