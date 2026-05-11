@@ -772,6 +772,16 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
       lexer->result_symbol = DEDENT;
       return true;
     }
+    // EOF after `;` (no trailing newline): drain remaining indent scopes so
+    // the in-flight expression block can close. Without this, a file ending
+    // in `   x();` (semicolon, no newline) leaves the parser stuck and falls
+    // into error recovery (see InterfaceTemplateSelector.fs / Build.fs).
+    if (lexer->eof(lexer) && valid_symbols[DEDENT] &&
+        scanner->indents.size > 0 && !in_paren_bounded) {
+      pop_indent(scanner);
+      lexer->result_symbol = DEDENT;
+      return true;
+    }
     found_end_of_line = true;
     found_end_of_line_semi_colon = true;
     indent_length = next_indent;
