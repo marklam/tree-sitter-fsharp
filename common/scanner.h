@@ -752,6 +752,11 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
     }
     found_end_of_line = true;
     found_end_of_line_semi_colon = true;
+    // Update indent_length to the column of the next non-whitespace char so
+    // the DEDENT logic below can compare against the indent stack. Without
+    // this, `let x = 1;\n    let y = ...` keeps the let-RHS scope open and
+    // the next `let` is parsed as a sequential_expression continuation.
+    indent_length = lexer->get_column(lexer);
     lexer->mark_end(lexer);
   }
 
@@ -1020,8 +1025,15 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
 
   if (valid_symbols[NEWLINE] && found_end_of_line_semi_colon &&
       !found_comment_start && !found_bracket_end) {
-    lexer->result_symbol = NEWLINE;
-    return true;
+    // If the `;` is followed by a less-indented line, fall through to the
+    // DEDENT logic so the let-RHS / inner block closes before treating the
+    // next statement as a sequential continuation. Otherwise emit NEWLINE
+    // as the explicit-statement-separator.
+    if (scanner->indents.size == 0 ||
+        indent_length >= peek_indent_length(scanner)) {
+      lexer->result_symbol = NEWLINE;
+      return true;
+    }
   }
 
   if (valid_symbols[INDENT] && !valid_symbols[ERROR_SENTINEL] &&
