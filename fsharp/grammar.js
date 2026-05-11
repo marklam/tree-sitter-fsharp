@@ -2124,6 +2124,10 @@ module.exports = grammar({
           token.immediate(prec(1, /[+-]/)),
           /[-+=<>|&^*'%@?][!%&*+./<=>@^|~?-]*/,
           /\/[!%&*+.<=>@^|~?-]*/,
+          // Range-prefixed custom operators like `..>` (Hedgehog, etc).
+          // Requires >=1 trailing op char so the bare `..` range literal in
+          // range_expression isn't shadowed.
+          /\.\.[!%&*+/<=>@^|~?-]+/,
           "=",
           "!=",
           ":=",
