@@ -1320,7 +1320,7 @@ module.exports = grammar({
       choice($.static_parameter_value, $.named_static_parameter),
 
     named_static_parameter: ($) =>
-      prec(3, seq($.identifier, "=", $.static_parameter_value)),
+      prec(3, seq($.identifier, "=", alias($._named_static_parameter_value, $.static_parameter_value))),
 
     type_attribute: ($) =>
       choice(
@@ -1471,7 +1471,15 @@ module.exports = grammar({
         seq("id", "=", $.static_parameter_value),
       ),
 
-    static_parameter_value: ($) => choice($.const, seq($.const, $._expression)),
+    static_parameter_value: ($) =>
+      choice($.const, seq($.const, $._expression)),
+
+    _named_static_parameter_value: ($) =>
+      choice(
+        $.const,
+        seq($.const, $._expression),
+        $.long_identifier_or_op,
+      ),
 
     exception_definition: ($) =>
       seq(

@@ -4838,8 +4838,13 @@
             "value": "="
           },
           {
-            "type": "SYMBOL",
-            "name": "static_parameter_value"
+            "type": "ALIAS",
+            "content": {
+              "type": "SYMBOL",
+              "name": "_named_static_parameter_value"
+            },
+            "named": true,
+            "value": "static_parameter_value"
           }
         ]
       }
@@ -5798,6 +5803,32 @@
               "name": "_expression"
             }
           ]
+        }
+      ]
+    },
+    "_named_static_parameter_value": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "SYMBOL",
+          "name": "const"
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "SYMBOL",
+              "name": "const"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "_expression"
+            }
+          ]
+        },
+        {
+          "type": "SYMBOL",
+          "name": "long_identifier_or_op"
         }
       ]
     },
