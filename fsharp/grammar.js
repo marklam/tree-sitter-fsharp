@@ -2006,12 +2006,26 @@ module.exports = grammar({
 
     _string_literal: ($) => seq('"', repeat($._string_char), '"'),
 
-    string: ($) => choice($._string_literal, $.format_string),
+    string: ($) => choice($._string_literal, $.format_string, $.verbatim_format_string),
 
     _verbatim_string_char: ($) =>
       choice($._simple_string_char, $._non_escape_char, "\\", /\"\"/),
     verbatim_string: ($) =>
       seq('@"', repeat($._verbatim_string_char), token.immediate('"')),
+    // Verbatim interpolated string: `@$"...{expr}..."` or `$@"...{expr}..."`.
+    // Mirrors `format_string` but uses verbatim string chars (no escape
+    // interpretation).
+    verbatim_format_string: ($) =>
+      seq(
+        choice(token(prec(100, '@$"')), token(prec(100, '$@"'))),
+        repeat(
+          choice(
+            $.format_string_eval,
+            $._verbatim_string_char,
+          ),
+        ),
+        '"',
+      ),
     bytearray: ($) => seq('"', repeat($._string_char), token.immediate('"B')),
     verbatim_bytearray: ($) =>
       seq('@"', repeat($._verbatim_string_char), token.immediate('"B')),

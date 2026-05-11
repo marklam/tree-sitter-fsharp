@@ -5055,6 +5055,10 @@
         {
           "type": "format_string",
           "named": true
+        },
+        {
+          "type": "verbatim_format_string",
+          "named": true
         }
       ]
     }
@@ -6355,6 +6359,21 @@
     "fields": {}
   },
   {
+    "type": "verbatim_format_string",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": false,
+      "types": [
+        {
+          "type": "format_string_eval",
+          "named": true
+        }
+      ]
+    }
+  },
+  {
     "type": "verbatim_string",
     "named": true,
     "fields": {}
@@ -6437,6 +6456,10 @@
   },
   {
     "type": "$\"\"\"",
+    "named": false
+  },
+  {
+    "type": "$@\"",
     "named": false
   },
   {
@@ -6533,6 +6556,10 @@
   },
   {
     "type": "@\"",
+    "named": false
+  },
+  {
+    "type": "@$\"",
     "named": false
   },
   {

@@ -8587,6 +8587,10 @@
         {
           "type": "SYMBOL",
           "name": "format_string"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "verbatim_format_string"
         }
       ]
     },
@@ -8631,6 +8635,58 @@
             "type": "STRING",
             "value": "\""
           }
+        }
+      ]
+    },
+    "verbatim_format_string": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "TOKEN",
+              "content": {
+                "type": "PREC",
+                "value": 100,
+                "content": {
+                  "type": "STRING",
+                  "value": "@$\""
+                }
+              }
+            },
+            {
+              "type": "TOKEN",
+              "content": {
+                "type": "PREC",
+                "value": 100,
+                "content": {
+                  "type": "STRING",
+                  "value": "$@\""
+                }
+              }
+            }
+          ]
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "format_string_eval"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "_verbatim_string_char"
+              }
+            ]
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "\""
         }
       ]
     },
