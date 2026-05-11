@@ -754,24 +754,31 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
     // separator. Block comments can nest in F# so track depth.
     //
     // The peeks for `(*` and `//` must advance past `(` / `/` before they
-    // can confirm the comment, so we re-anchor mark_end (and snapshot the
-    // column for next_indent) at the start of each potential comment.
-    // Without that re-anchor, a bare `(` after `;` (e.g. `[| (a); (b) |]`)
-    // would have its `(` swallowed into the NEWLINE token and the parser
-    // would see `b)` instead of `(b)`.
+    // can confirm the comment. To avoid swallowing a bare `(`/`/` into the
+    // NEWLINE token, the per-iteration loop body anchors mark_end at the
+    // potential-comment-start position BEFORE that advance — but only on
+    // the iterations where a comment-peek actually happens, NOT on every
+    // iteration. Pre-anchoring mark_end past trailing whitespace would
+    // commit past `;` even on the DEDENT path that follows, and the next
+    // scan call would no longer see `;` (so the multiple DEDENTs needed to
+    // close nested indent scopes can never fire — see fix-67).
+    //
+    // Also track the post-whitespace column separately so the DEDENT check
+    // below can use the next-line indent without depending on mark_end's
+    // position.
+    bool bare_paren_or_slash = false;
     uint32_t next_indent = lexer->get_column(lexer);
-    lexer->mark_end(lexer);
     for (;;) {
       while (lexer->lookahead == ' ' || lexer->lookahead == '\n' ||
              lexer->lookahead == '\r' || lexer->lookahead == '\t') {
         advance(lexer);
       }
-      // Anchor mark_end + column at the speculative-comment-start position,
-      // BEFORE advancing past `(` or `/`. If the peek confirms a comment,
-      // we'll re-anchor at the comment's end; otherwise this anchor stays.
       next_indent = lexer->get_column(lexer);
-      lexer->mark_end(lexer);
       if (lexer->lookahead == '(') {
+        // Anchor mark_end at `(` before the speculative advance so a bare
+        // `(` is NOT consumed by NEWLINE. For block-comment matches we
+        // re-anchor past `*)` to extend the skip.
+        lexer->mark_end(lexer);
         advance(lexer);
         if (lexer->lookahead == '*') {
           advance(lexer);
@@ -793,11 +800,12 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
               advance(lexer);
             }
           }
+          lexer->mark_end(lexer);
           continue;
         }
         // Bare `(` (e.g. start of a paren expression) — back out and stop.
-        // mark_end was re-anchored at `(` above, so the NEWLINE we emit
-        // will not consume `(`.
+        // mark_end is at `(`, so the emitted NEWLINE will not consume it.
+        bare_paren_or_slash = true;
         break;
       }
       // Same-line `// line comment` after `;` — common F# style:
@@ -808,15 +816,19 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
       // and the next scan emits another NEWLINE for the next-line indent —
       // two NEWLINEs in a row break the `_expression_block_for_let`'s body.
       if (lexer->lookahead == '/') {
+        // Same anchoring pattern as the `(` branch above.
+        lexer->mark_end(lexer);
         advance(lexer);
         if (lexer->lookahead == '/') {
           while (lexer->lookahead != '\n' && !lexer->eof(lexer)) {
             advance(lexer);
           }
+          lexer->mark_end(lexer);
           continue;
         }
-        // Single `/` (division/infix) — back out and stop. mark_end was
-        // re-anchored at `/` above.
+        // Single `/` (division/infix) — back out and stop. mark_end stays
+        // at `/`.
+        bare_paren_or_slash = true;
         break;
       }
       break;
@@ -835,8 +847,16 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
     if (valid_symbols[DEDENT] && scanner->indents.size > 0 &&
         next_indent < peek_indent_length(scanner) &&
         !in_paren_bounded) {
-      // Don't commit; mark_end stays at line 525, position rewinds. Emit
-      // DEDENT now and let the next scan handle the `;` itself.
+      // Don't commit. For the non-bare-`(`/`/` path mark_end is still at
+      // the pre-`;` position (set at line 578), so this DEDENT is zero-
+      // width and the next scan re-enters with `;` as lookahead — letting
+      // multiple DEDENT levels fire one per scan call until the indent
+      // matches. For the bare-`(`/`/` path mark_end was advanced to the
+      // `(`/`/` position, so DEDENT consumes up to there; but inside a
+      // paren-bounded ancestor `in_paren_bounded` is true and this branch
+      // is skipped anyway, and outside a paren-bounded ancestor a bare
+      // `(`/`/` directly after `;` on the same line doesn't trigger the
+      // indent-drop check, so the consume-up-to-`(` behaviour is benign.
       pop_indent(scanner);
       lexer->result_symbol = DEDENT;
       return true;
@@ -844,11 +864,13 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
     found_end_of_line = true;
     found_end_of_line_semi_colon = true;
     indent_length = next_indent;
-    // mark_end is already anchored inside the loop above (at the start of
-    // a bare `(`/`/` or past the trailing whitespace/comments). Re-marking
-    // here would clobber the bare-paren anchor with the current internal
-    // position, which is past `(` and would re-introduce the swallowed-`(`
-    // bug.
+    if (!bare_paren_or_slash) {
+      // Non-bare path: commit past `;` + trailing whitespace (+ comments).
+      // The bare path already anchored mark_end at the `(`/`/` position
+      // inside the loop; re-marking here would clobber that anchor with
+      // the position past the bare character.
+      lexer->mark_end(lexer);
+    }
   }
 
   if (lexer->lookahead == 't' &&

@@ -557,6 +557,54 @@ let ys = [| (a, b); (c, d) |]
               (identifier))))))))
 
 ================================================================================
+trailing semicolon in for-loop body before dedented match arm
+================================================================================
+
+let f x =
+    match x with
+    | A ->
+        for i = 0 to 3 do
+            a <- b;
+    | B ->
+        ()
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (argument_patterns
+          (long_identifier
+            (identifier))))
+      (match_expression
+        (long_identifier_or_op
+          (identifier))
+        (rules
+          (rule
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier)))
+            (for_expression
+              (identifier)
+              (const
+                (int))
+              (const
+                (int))
+              (mutate_expression
+                (long_identifier_or_op
+                  (identifier))
+                (long_identifier_or_op
+                  (identifier)))))
+          (rule
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier)))
+            (const
+              (unit))))))))
+
+================================================================================
 index list expressions
 ================================================================================
 
