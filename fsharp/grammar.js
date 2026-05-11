@@ -1895,6 +1895,7 @@ module.exports = grammar({
       seq(
         optional($.attributes),
         "extern",
+        optional($.attributes),
         field("return_type", $._type),
         field("name", $.identifier),
         "(",
