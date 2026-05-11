@@ -1914,11 +1914,11 @@ module.exports = grammar({
       ),
 
     extern_param: ($) =>
-      seq(
+      prec.right(20, seq(
         optional($.attributes),
         field("type", $._type),
-        field("name", $.identifier),
-      ),
+        field("name", optional($.identifier)),
+      )),
 
     class_inherits_decl: ($) =>
       prec.left(

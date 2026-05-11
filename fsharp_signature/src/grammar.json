@@ -4246,6 +4246,10 @@
           {
             "type": "SYMBOL",
             "name": "struct_type"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "byref_type"
           }
         ]
       }
@@ -4299,6 +4303,10 @@
           {
             "type": "SYMBOL",
             "name": "struct_type"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "byref_type"
           }
         ]
       }
@@ -4499,6 +4507,26 @@
           "name": "_static_type_identifier"
         }
       ]
+    },
+    "byref_type": {
+      "type": "PREC_LEFT",
+      "value": 5,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_type"
+          },
+          {
+            "type": "IMMEDIATE_TOKEN",
+            "content": {
+              "type": "STRING",
+              "value": "&"
+            }
+          }
+        ]
+      }
     },
     "generic_type": {
       "type": "PREC_RIGHT",
@@ -8038,37 +8066,49 @@
       ]
     },
     "extern_param": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
+      "type": "PREC_RIGHT",
+      "value": 20,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "attributes"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
+          },
+          {
+            "type": "FIELD",
+            "name": "type",
+            "content": {
               "type": "SYMBOL",
-              "name": "attributes"
-            },
-            {
-              "type": "BLANK"
+              "name": "_type"
             }
-          ]
-        },
-        {
-          "type": "FIELD",
-          "name": "type",
-          "content": {
-            "type": "SYMBOL",
-            "name": "_type"
+          },
+          {
+            "type": "FIELD",
+            "name": "name",
+            "content": {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "identifier"
+                },
+                {
+                  "type": "BLANK"
+                }
+              ]
+            }
           }
-        },
-        {
-          "type": "FIELD",
-          "name": "name",
-          "content": {
-            "type": "SYMBOL",
-            "name": "identifier"
-          }
-        }
-      ]
+        ]
+      }
     },
     "class_inherits_decl": {
       "type": "PREC_LEFT",
