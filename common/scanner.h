@@ -752,11 +752,25 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
     // single NEWLINE between fields. Without this, mark_end commits at `(`,
     // the parser sees `(` as the next token and fails to reduce the field
     // separator. Block comments can nest in F# so track depth.
+    //
+    // The peeks for `(*` and `//` must advance past `(` / `/` before they
+    // can confirm the comment, so we re-anchor mark_end (and snapshot the
+    // column for next_indent) at the start of each potential comment.
+    // Without that re-anchor, a bare `(` after `;` (e.g. `[| (a); (b) |]`)
+    // would have its `(` swallowed into the NEWLINE token and the parser
+    // would see `b)` instead of `(b)`.
+    uint32_t next_indent = lexer->get_column(lexer);
+    lexer->mark_end(lexer);
     for (;;) {
       while (lexer->lookahead == ' ' || lexer->lookahead == '\n' ||
              lexer->lookahead == '\r' || lexer->lookahead == '\t') {
         advance(lexer);
       }
+      // Anchor mark_end + column at the speculative-comment-start position,
+      // BEFORE advancing past `(` or `/`. If the peek confirms a comment,
+      // we'll re-anchor at the comment's end; otherwise this anchor stays.
+      next_indent = lexer->get_column(lexer);
+      lexer->mark_end(lexer);
       if (lexer->lookahead == '(') {
         advance(lexer);
         if (lexer->lookahead == '*') {
@@ -782,6 +796,8 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
           continue;
         }
         // Bare `(` (e.g. start of a paren expression) — back out and stop.
+        // mark_end was re-anchored at `(` above, so the NEWLINE we emit
+        // will not consume `(`.
         break;
       }
       // Same-line `// line comment` after `;` — common F# style:
@@ -799,12 +815,12 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
           }
           continue;
         }
-        // Single `/` (division/infix) — back out and stop.
+        // Single `/` (division/infix) — back out and stop. mark_end was
+        // re-anchored at `/` above.
         break;
       }
       break;
     }
-    uint32_t next_indent = lexer->get_column(lexer);
     // Detect paren-bounded ancestor (`[| ... |]`, `( ... )`, `{| ... |}`):
     // inside one, `;` separates elements at varying indent and must stay
     // NEWLINE. The grammar uses `_indent` for `_list_element` so the top of
@@ -828,7 +844,11 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
     found_end_of_line = true;
     found_end_of_line_semi_colon = true;
     indent_length = next_indent;
-    lexer->mark_end(lexer);
+    // mark_end is already anchored inside the loop above (at the start of
+    // a bare `(`/`/` or past the trailing whitespace/comments). Re-marking
+    // here would clobber the bare-paren anchor with the current internal
+    // position, which is past `(` and would re-introduce the swallowed-`(`
+    // bug.
   }
 
   if (lexer->lookahead == 't' &&

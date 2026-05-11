@@ -514,6 +514,49 @@ do [|2; 3; 4;|]
           (int))))))
 
 ================================================================================
+array of paren expressions separated by semicolons
+================================================================================
+
+let xs = [| (a); (b) |]
+let ys = [| (a, b); (c, d) |]
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (array_expression
+        (paren_expression
+          (long_identifier_or_op
+            (identifier)))
+        (paren_expression
+          (long_identifier_or_op
+            (identifier))))))
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (array_expression
+        (paren_expression
+          (tuple_expression
+            (long_identifier_or_op
+              (identifier))
+            (long_identifier_or_op
+              (identifier))))
+        (paren_expression
+          (tuple_expression
+            (long_identifier_or_op
+              (identifier))
+            (long_identifier_or_op
+              (identifier))))))))
+
+================================================================================
 index list expressions
 ================================================================================
 
