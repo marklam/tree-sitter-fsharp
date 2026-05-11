@@ -784,6 +784,24 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
         // Bare `(` (e.g. start of a paren expression) — back out and stop.
         break;
       }
+      // Same-line `// line comment` after `;` — common F# style:
+      //   let a = 1; // distance
+      //   let b = 2
+      // Without skipping the comment, mark_end commits at `/`, NEWLINE is
+      // emitted there, then the lexer matches the line_comment as an extra
+      // and the next scan emits another NEWLINE for the next-line indent —
+      // two NEWLINEs in a row break the `_expression_block_for_let`'s body.
+      if (lexer->lookahead == '/') {
+        advance(lexer);
+        if (lexer->lookahead == '/') {
+          while (lexer->lookahead != '\n' && !lexer->eof(lexer)) {
+            advance(lexer);
+          }
+          continue;
+        }
+        // Single `/` (division/infix) — back out and stop.
+        break;
+      }
       break;
     }
     uint32_t next_indent = lexer->get_column(lexer);
