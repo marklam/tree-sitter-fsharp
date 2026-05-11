@@ -1079,6 +1079,15 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
       !found_bracket_end && !found_preprocessor_end &&
       !found_same_line_pipe_infix) {
     push_indent(scanner, indent_length, false);
+    // If this scan call started by skipping past `#if cond` (i.e. the
+    // INDENT we're about to emit is the FIRST indent inside the `#if`
+    // block's content), record that indent as a preproc boundary so the
+    // matching `#endif`'s DEDENT chain only pops indents pushed for INNER
+    // content (e.g. an inline `if c then ()`'s then-body), preserving the
+    // outer scope (here the just-pushed indent) the `#if` block sits in.
+    if (found_preproc_if) {
+      array_push(&scanner->preprocessor_indents, (uint16_t)indent_length);
+    }
     lexer->result_symbol = INDENT;
     return true;
   }
@@ -1119,7 +1128,16 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
       if (scanner->preprocessor_indents.size > 0) {
         uint16_t current_preproc_length =
             *array_back(&scanner->preprocessor_indents);
-        can_dedent_preproc = current_preproc_length < indent_length;
+        // Compare against the indent ABOUT TO BE POPPED (top of indent
+        // stack), not the new indent. This allows DEDENT to fire when a
+        // sibling at the preproc boundary follows a deeper inner block:
+        // e.g. inside `#if … if c then\n    failwith\n\n    let z = 1\n#endif`,
+        // the transition from the then-body (col >preproc) to the
+        // sibling-let (col == preproc) needs DEDENT to pop the then-body
+        // INDENT. The boundary indent itself is preserved because once
+        // current_indent_length reaches preproc_length, this check goes
+        // false and the standard NEWLINE path takes over.
+        can_dedent_preproc = current_preproc_length < current_indent_length;
       } else {
         can_dedent_preproc = true;
       }
