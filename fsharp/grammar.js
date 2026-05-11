@@ -674,7 +674,7 @@ module.exports = grammar({
           "new",
           $._expression,
           optional(seq("as", $.identifier)),
-          $._object_expression_inner,
+          optional($._object_expression_inner),
         ),
       ),
 

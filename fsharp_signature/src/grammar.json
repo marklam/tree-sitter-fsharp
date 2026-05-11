@@ -2368,8 +2368,16 @@
             ]
           },
           {
-            "type": "SYMBOL",
-            "name": "_object_expression_inner"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "_object_expression_inner"
+              },
+              {
+                "type": "BLANK"
+              }
+            ]
           }
         ]
       }
