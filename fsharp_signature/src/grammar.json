@@ -1605,6 +1605,24 @@
           ]
         },
         {
+          "type": "ALIAS",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "("
+              },
+              {
+                "type": "STRING",
+                "value": ")"
+              }
+            ]
+          },
+          "named": true,
+          "value": "unit"
+        },
+        {
           "type": "SYMBOL",
           "name": "type_check_pattern"
         }

@@ -472,6 +472,7 @@ module.exports = grammar({
         $.record_pattern,
         $.array_pattern,
         seq("(", $._pattern, ")"),
+        alias(seq("(", ")"), $.unit),
         $.type_check_pattern,
       ),
 

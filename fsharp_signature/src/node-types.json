@@ -319,6 +319,10 @@
           "named": true
         },
         {
+          "type": "unit",
+          "named": true
+        },
+        {
           "type": "wildcard_pattern",
           "named": true
         }
