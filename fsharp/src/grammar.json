@@ -8838,8 +8838,8 @@
         "type": "PREC",
         "value": 100000,
         "content": {
-          "type": "STRING",
-          "value": "()"
+          "type": "PATTERN",
+          "value": "\\(\\s*\\)"
         }
       }
     },

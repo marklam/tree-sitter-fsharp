@@ -2040,7 +2040,7 @@ module.exports = grammar({
 
     bool: (_) => token(choice("true", "false")),
 
-    unit: (_) => token(prec(100000, "()")),
+    unit: (_) => token(prec(100000, /\(\s*\)/)),
 
     const: ($) =>
       choice(
