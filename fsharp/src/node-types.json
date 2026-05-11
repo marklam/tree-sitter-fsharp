@@ -1327,6 +1327,10 @@
         {
           "type": "identifier",
           "named": true
+        },
+        {
+          "type": "paren_pattern",
+          "named": true
         }
       ]
     }
