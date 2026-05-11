@@ -2124,6 +2124,10 @@ module.exports = grammar({
           token.immediate(prec(1, /[+-]/)),
           /[-+=<>|&^*'%@?][!%&*+./<=>@^|~?-]*/,
           /\/[!%&*+.<=>@^|~?-]*/,
+          // Dot-prefixed operators like `.@`, `.=`, `.&.`. Excludes `.<` and
+          // `..` because those collide with float-measure literals (`0.<cm>`)
+          // and the range operator (`a..b`) respectively.
+          /\.[!%&*+/=>@^|~?-][!%&*+./<=>@^|~?-]*/,
           "=",
           "!=",
           ":=",
