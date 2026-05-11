@@ -469,6 +469,13 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
       return true;
     }
     if (lexer->lookahead == '\n' || lexer->lookahead == '\r') {
+      // Anchor mark_end at the newline so this stays a true zero-width
+      // lookahead. Without this, the skip() loop below also moves the
+      // committed position past the newline + indent, and the regular
+      // NEWLINE that the parser needs to separate sibling module-body
+      // elements never gets a chance to fire — `module M =\n  type [<M>] a\n
+      // type [<M>] b` then errors at `b`.
+      lexer->mark_end(lexer);
       // Peek ahead: skip newlines/whitespace to find indentation of next content.
       // If next content is NOT more indented than current scope, this is a bare
       // type declaration (e.g. [<Measure>] type Dollars).
