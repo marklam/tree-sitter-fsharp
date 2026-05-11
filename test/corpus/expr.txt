@@ -605,6 +605,63 @@ let f x =
               (unit))))))))
 
 ================================================================================
+trailing semicolon in let-body inside a lambda
+================================================================================
+
+let f xs =
+    xs |> List.map (fun p ->
+        let p1 = X.foo();
+        let q = 3
+        ())
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (argument_patterns
+          (long_identifier
+            (identifier))))
+      (application_expression
+        (infix_expression
+          (long_identifier_or_op
+            (identifier))
+          (infix_op)
+          (long_identifier_or_op
+            (long_identifier
+              (identifier)
+              (identifier))))
+        (paren_expression
+          (fun_expression
+            (argument_patterns
+              (long_identifier
+                (identifier)))
+            (declaration_expression
+              (function_or_value_defn
+                (value_declaration_left
+                  (identifier_pattern
+                    (long_identifier_or_op
+                      (identifier))))
+                (application_expression
+                  (long_identifier_or_op
+                    (long_identifier
+                      (identifier)
+                      (identifier)))
+                  (unit)))
+              (declaration_expression
+                (function_or_value_defn
+                  (value_declaration_left
+                    (identifier_pattern
+                      (long_identifier_or_op
+                        (identifier))))
+                  (const
+                    (int)))
+                (const
+                  (unit))))))))))
+
+================================================================================
 index list expressions
 ================================================================================
 

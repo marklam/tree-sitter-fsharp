@@ -833,28 +833,25 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
       }
       break;
     }
-    // Detect paren-bounded ancestor (`[| ... |]`, `( ... )`, `{| ... |}`):
-    // inside one, `;` separates elements at varying indent and must stay
-    // NEWLINE. The grammar uses `_indent` for `_list_element` so the top of
-    // the indent stack alone isn't sufficient — scan ancestors.
-    bool in_paren_bounded = false;
-    for (uint32_t i = 0; i < scanner->paren_indents.size; i++) {
-      if (*array_get(&scanner->paren_indents, i)) {
-        in_paren_bounded = true;
-        break;
-      }
-    }
+    // Only suppress DEDENT when the indent we'd POP is itself a paren
+    // indent (e.g. the `_paren_indent` pushed by `_list_element` inside
+    // `[| ... |]`): there the `;` separates elements at varying indent
+    // and the closing `]`/`|]` ends the scope, not indent, so DEDENT
+    // would be premature. Scanning the whole ancestor chain (the old
+    // `in_paren_bounded` check) was too coarse — it suppressed DEDENT
+    // for a NESTED non-paren indent (e.g. a let-body inside a lambda's
+    // paren scope) where the let-body legitimately needs to close on a
+    // `;` followed by a dedented sibling `let`.
+    bool peek_paren_indent = peek_is_paren_indent(scanner);
     if (valid_symbols[DEDENT] && scanner->indents.size > 0 &&
         next_indent < peek_indent_length(scanner) &&
-        !in_paren_bounded) {
+        !peek_paren_indent) {
       // Don't commit. For the non-bare-`(`/`/` path mark_end is still at
       // the pre-`;` position (set at line 578), so this DEDENT is zero-
       // width and the next scan re-enters with `;` as lookahead — letting
       // multiple DEDENT levels fire one per scan call until the indent
       // matches. For the bare-`(`/`/` path mark_end was advanced to the
-      // `(`/`/` position, so DEDENT consumes up to there; but inside a
-      // paren-bounded ancestor `in_paren_bounded` is true and this branch
-      // is skipped anyway, and outside a paren-bounded ancestor a bare
+      // `(`/`/` position, so DEDENT consumes up to there; but a bare
       // `(`/`/` directly after `;` on the same line doesn't trigger the
       // indent-drop check, so the consume-up-to-`(` behaviour is benign.
       pop_indent(scanner);
