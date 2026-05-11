@@ -1221,8 +1221,16 @@ module.exports = grammar({
           $.flexible_type,
           $.anon_record_type,
           $.struct_type,
+          $.nullable_type,
         ),
       ),
+
+    // F# 9 nullable reference type: `T | null`.
+    // Negative dynamic prec so the parser prefers to reduce `_type` and let `|`
+    // continue to whatever the surrounding context allows (e.g. union-case
+    // separator inside `union_type_defn`).
+    nullable_type: ($) =>
+      prec.left(seq($._type, "|", "null")),
 
     // Like _type but excludes compound_type and function_type, used in member
     // signature argument positions. Per F# spec, T * T before -> is always two
@@ -1243,6 +1251,7 @@ module.exports = grammar({
           $.flexible_type,
           $.anon_record_type,
           $.struct_type,
+          $.nullable_type,
         ),
       ),
 
@@ -1266,6 +1275,7 @@ module.exports = grammar({
           $.flexible_type,
           $.anon_record_type,
           $.struct_type,
+          $.nullable_type,
         ),
       ),
 

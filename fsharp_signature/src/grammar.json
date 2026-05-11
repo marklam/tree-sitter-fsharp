@@ -4246,6 +4246,31 @@
           {
             "type": "SYMBOL",
             "name": "struct_type"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "nullable_type"
+          }
+        ]
+      }
+    },
+    "nullable_type": {
+      "type": "PREC_LEFT",
+      "value": 0,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_type"
+          },
+          {
+            "type": "STRING",
+            "value": "|"
+          },
+          {
+            "type": "STRING",
+            "value": "null"
           }
         ]
       }
@@ -4299,6 +4324,10 @@
           {
             "type": "SYMBOL",
             "name": "struct_type"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "nullable_type"
           }
         ]
       }
@@ -4356,6 +4385,10 @@
           {
             "type": "SYMBOL",
             "name": "struct_type"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "nullable_type"
           }
         ]
       }
