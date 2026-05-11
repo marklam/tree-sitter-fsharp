@@ -1771,6 +1771,8 @@ module.exports = grammar({
             ),
             seq("static", $.value_declaration),
             $.additional_constr_defn,
+            // Constructor signature in .fsi files: `new : type -> Type`.
+            seq(optional($.access_modifier), "new", ":", $.curried_spec),
           ),
         ),
       ),

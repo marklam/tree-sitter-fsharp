@@ -3160,6 +3160,10 @@
           "named": true
         },
         {
+          "type": "curried_spec",
+          "named": true
+        },
+        {
           "type": "flexible_type",
           "named": true
         },

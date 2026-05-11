@@ -2534,6 +2534,10 @@
           "named": true
         },
         {
+          "type": "curried_spec",
+          "named": true
+        },
+        {
           "type": "identifier",
           "named": true
         },
