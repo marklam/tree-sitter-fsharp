@@ -747,9 +747,44 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
     // (with `;` still as lookahead) and emits NEWLINE for the actual
     // statement separator.
     advance(lexer);
-    while (lexer->lookahead == ' ' || lexer->lookahead == '\n' ||
-           lexer->lookahead == '\r' || lexer->lookahead == '\t') {
-      advance(lexer);
+    // Skip trailing whitespace AND any same-line block comments `(* ... *)`,
+    // so a record-style line like `{ A : int; (* foo *) C : int }` produces a
+    // single NEWLINE between fields. Without this, mark_end commits at `(`,
+    // the parser sees `(` as the next token and fails to reduce the field
+    // separator. Block comments can nest in F# so track depth.
+    for (;;) {
+      while (lexer->lookahead == ' ' || lexer->lookahead == '\n' ||
+             lexer->lookahead == '\r' || lexer->lookahead == '\t') {
+        advance(lexer);
+      }
+      if (lexer->lookahead == '(') {
+        advance(lexer);
+        if (lexer->lookahead == '*') {
+          advance(lexer);
+          int depth = 1;
+          while (depth > 0 && !lexer->eof(lexer)) {
+            if (lexer->lookahead == '(') {
+              advance(lexer);
+              if (lexer->lookahead == '*') {
+                advance(lexer);
+                depth++;
+              }
+            } else if (lexer->lookahead == '*') {
+              advance(lexer);
+              if (lexer->lookahead == ')') {
+                advance(lexer);
+                depth--;
+              }
+            } else {
+              advance(lexer);
+            }
+          }
+          continue;
+        }
+        // Bare `(` (e.g. start of a paren expression) — back out and stop.
+        break;
+      }
+      break;
     }
     uint32_t next_indent = lexer->get_column(lexer);
     // Detect paren-bounded ancestor (`[| ... |]`, `( ... )`, `{| ... |}`):
