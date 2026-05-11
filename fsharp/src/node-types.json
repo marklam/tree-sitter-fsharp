@@ -1305,6 +1305,10 @@
           "named": true
         },
         {
+          "type": "_type",
+          "named": true
+        },
+        {
           "type": "and_bang",
           "named": true
         },
