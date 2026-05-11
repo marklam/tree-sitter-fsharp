@@ -741,7 +741,13 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
 
   if (valid_symbols[NEWLINE] && lexer->lookahead == ';') {
     advance(lexer);
-    while (lexer->lookahead == ' ' || lexer->lookahead == '\n') {
+    // Consume trailing whitespace AND line terminators (\r as well as
+    // \n, so CRLF files behave the same as LF). Without `\r` here the
+    // `;` handler would stop at the bare `\r` and leave the `\r\n` to
+    // be re-scanned, which mis-counted the next line's indent for
+    // module-nested let bodies.
+    while (lexer->lookahead == ' ' || lexer->lookahead == '\n' ||
+           lexer->lookahead == '\r' || lexer->lookahead == '\t') {
       advance(lexer);
     }
     found_end_of_line = true;
