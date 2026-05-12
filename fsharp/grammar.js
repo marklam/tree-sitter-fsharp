@@ -97,6 +97,7 @@ module.exports = grammar({
     $._paren_indent, // like _indent but pushes 0 onto indent stack for paren contexts
     $._type_decl_newline, // lookahead token: fires at newline/EOF when the next non-blank line is not more indented, used to match bare type declarations
     $._in, // external 'in' keyword token for let...in expressions; only produced when valid, so 'in' as identifier in query/CE contexts is unaffected
+    $._record_indent, // like _indent but only fires when found_end_of_line is true; used by record_pattern's multi-line alternative
 
     $._error_sentinel, // unused token to detect parser errors in external parser.
   ],
@@ -496,8 +497,13 @@ module.exports = grammar({
               repeat(seq($._newline, $.field_pattern)),
               optional($._newline),
             ),
+            // Multi-line variant: subsequent fields on indented continuation
+            // lines (e.g. `{ a = 1\n    b = 2 }`). Uses `_record_indent`
+            // (newline-gated INDENT) instead of `_indent` so a single-line
+            // pattern like `{ opt = Some null }` doesn't shift a zero-
+            // width INDENT after `Some` and commit to this branch.
             seq(
-              $._indent,
+              $._record_indent,
               $.field_pattern,
               repeat(seq($._newline, $.field_pattern)),
               optional($._newline),

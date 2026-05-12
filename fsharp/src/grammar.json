@@ -1820,7 +1820,7 @@
                 "members": [
                   {
                     "type": "SYMBOL",
-                    "name": "_indent"
+                    "name": "_record_indent"
                   },
                   {
                     "type": "SYMBOL",
@@ -10839,6 +10839,10 @@
     {
       "type": "SYMBOL",
       "name": "_in"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "_record_indent"
     },
     {
       "type": "SYMBOL",

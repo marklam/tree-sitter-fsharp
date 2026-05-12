@@ -39,6 +39,13 @@ enum TokenType {
   PAREN_INDENT,
   TYPE_DECL_NEWLINE,
   IN,
+  // Variant of INDENT that only fires when an actual newline has been
+  // crossed (i.e. `found_end_of_line == true`). Used by the multi-line
+  // alternative of `record_pattern` so that a single-line pattern like
+  // `{ opt = Some null }` doesn't spuriously shift a zero-width INDENT
+  // after `Some` (committing to the multi-line branch and then failing
+  // to match `null` as a fresh `field_pattern`).
+  RECORD_INDENT,
   ERROR_SENTINEL
 };
 
@@ -1121,6 +1128,18 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
   if (valid_symbols[NEWLINE] && found_end_of_line_semi_colon &&
       !found_comment_start && !found_bracket_end) {
     lexer->result_symbol = NEWLINE;
+    return true;
+  }
+
+  // RECORD_INDENT fires before INDENT — it's the same shape (push indent
+  // onto the stack, zero-width) but only on actual end-of-line. Lets
+  // grammar rules opt into "real newline required" indentation without
+  // affecting the many places that rely on zero-width same-line INDENT.
+  if (valid_symbols[RECORD_INDENT] && !valid_symbols[ERROR_SENTINEL] &&
+      found_end_of_line && !found_bracket_end && !found_preprocessor_end &&
+      !found_same_line_pipe_infix) {
+    push_indent(scanner, indent_length, false);
+    lexer->result_symbol = RECORD_INDENT;
     return true;
   }
 
