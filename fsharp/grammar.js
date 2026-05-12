@@ -642,6 +642,10 @@ module.exports = grammar({
               $.field_initializers,
               $.object_expression,
               $.with_field_expression,
+              // F# explicit-constructor body: `{ inherit Base(args); ... }`.
+              // Used by classes that need to chain a base-class constructor
+              // call from within an explicit `new(...) = { ... }` body.
+              $.brace_inherits_body,
             ),
             $._indent,
             $._dedent,
@@ -1912,6 +1916,19 @@ module.exports = grammar({
         optional($.attributes),
         field("type", $._type),
         field("name", $.identifier),
+      ),
+
+    // Same shape as class_inherits_decl but used inside a brace_expression
+    // (constructor body). Defined separately so the LR generator gives the
+    // brace path its own state rather than merging with the class-body path
+    // — without that the `inherit` keyword inside `{ ... }` falls back to
+    // `identifier` (via the `word: identifier` rule).
+    brace_inherits_body: ($) =>
+      seq(
+        "inherit",
+        $._type,
+        optional(choice($.const, $.paren_expression)),
+        optional(seq($._newline, $.field_initializers)),
       ),
 
     class_inherits_decl: ($) =>

@@ -864,6 +864,10 @@
         "required": true,
         "types": [
           {
+            "type": "brace_inherits_body",
+            "named": true
+          },
+          {
             "type": "field_initializers",
             "named": true
           },
@@ -877,6 +881,33 @@
           }
         ]
       }
+    }
+  },
+  {
+    "type": "brace_inherits_body",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "_type",
+          "named": true
+        },
+        {
+          "type": "const",
+          "named": true
+        },
+        {
+          "type": "field_initializers",
+          "named": true
+        },
+        {
+          "type": "paren_expression",
+          "named": true
+        }
+      ]
     }
   },
   {

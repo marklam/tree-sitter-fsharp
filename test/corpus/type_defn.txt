@@ -725,6 +725,65 @@ type A() =
           (unit))))))
 
 ================================================================================
+explicit constructor body with `{ inherit Base(args); field = ... }`
+================================================================================
+
+type T =
+  inherit Exception
+  val s : string
+  new(m, i) =
+    {
+      inherit Exception(m, i)
+      s = "x"
+    }
+
+--------------------------------------------------------------------------------
+
+(file
+  (type_definition
+    (anon_type_defn
+      (type_name
+        (identifier))
+      (class_inherits_decl
+        (simple_type
+          (long_identifier
+            (identifier))))
+      (type_extension_elements
+        (member_defn
+          (identifier)
+          (simple_type
+            (long_identifier
+              (identifier)))))
+      (type_extension_elements
+        (member_defn
+          (additional_constr_defn
+            (paren_pattern
+              (repeat_pattern
+                (identifier_pattern
+                  (long_identifier_or_op
+                    (identifier)))
+                (identifier_pattern
+                  (long_identifier_or_op
+                    (identifier)))))
+            (brace_expression
+              (brace_inherits_body
+                (simple_type
+                  (long_identifier
+                    (identifier)))
+                (paren_expression
+                  (tuple_expression
+                    (long_identifier_or_op
+                      (identifier))
+                    (long_identifier_or_op
+                      (identifier))))
+                (field_initializers
+                  (field_initializer
+                    (long_identifier
+                      (identifier))
+                    (const
+                      (string))))))))))))
+
+================================================================================
 class inherit and member method definition
 ================================================================================
 
