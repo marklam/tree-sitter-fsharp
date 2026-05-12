@@ -677,6 +677,37 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
   }
 
   if (!valid_symbols[ERROR_SENTINEL] && lexer->lookahead == '$') {
+    // Before any speculative advance past `$`, fire DEDENT / NEWLINE when
+    // the `$` starts a less-indented (or same-indent sibling) line. The
+    // check used to live only inside the `valid_symbols[MULTI_DOLLAR_…]`
+    // branch, so for a plain `$"..."` after an inline `let x = if A
+    // then B else C\n  $"..."` we fell through to `is_infix_op_start`,
+    // which `skip()`s past `$` and ends up emitting a wide DEDENT that
+    // consumes the `\n` + indent. Subsequent scans then no longer see
+    // the newline (`found_end_of_line` is false) and can't emit further
+    // DEDENTs to close the surrounding scopes — so the next `$"..."`
+    // gets mis-merged into `application_expression` instead of starting
+    // a fresh sequential element.
+    //
+    // Don't touch mark_end here so the emitted DEDENT/NEWLINE stays
+    // zero-width — the next scan re-enters with `$` as lookahead and
+    // re-evaluates whether further DEDENTs are needed.
+    if (found_end_of_line && scanner->indents.size > 0) {
+      uint16_t current_indent_length = peek_indent_length(scanner);
+      if (valid_symbols[DEDENT] && indent_length < current_indent_length) {
+        bool can_dedent_paren_indent = !peek_is_paren_indent(scanner) || indent_length == 0 || lexer->eof(lexer);
+        if (can_dedent_paren_indent) {
+          pop_indent(scanner);
+          lexer->result_symbol = DEDENT;
+          return true;
+        }
+      }
+      if (valid_symbols[NEWLINE] && indent_length == current_indent_length && indent_length > 0) {
+        lexer->result_symbol = NEWLINE;
+        return true;
+      }
+    }
+
     lexer->mark_end(lexer);
 
     if (valid_symbols[MULTI_DOLLAR_TRIPLE_QUOTE_START]) {
@@ -689,24 +720,6 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
         scanner->multi_dollar_count = dollar_count;
         lexer->result_symbol = MULTI_DOLLAR_TRIPLE_QUOTE_START;
         return true;
-      }
-      // Not a multi-dollar string. Before bailing out, check if DEDENT or
-      // NEWLINE should be emitted -- the '$' might be the start of an
-      // interpolated string on a new, less-indented line.
-      if (found_end_of_line && scanner->indents.size > 0) {
-        uint16_t current_indent_length = peek_indent_length(scanner);
-        if (valid_symbols[DEDENT] && indent_length < current_indent_length) {
-          bool can_dedent_paren_indent = !peek_is_paren_indent(scanner) || indent_length == 0 || lexer->eof(lexer);
-          if (can_dedent_paren_indent) {
-            pop_indent(scanner);
-            lexer->result_symbol = DEDENT;
-            return true;
-          }
-        }
-        if (valid_symbols[NEWLINE] && indent_length == current_indent_length && indent_length > 0) {
-          lexer->result_symbol = NEWLINE;
-          return true;
-        }
       }
       return false;
     }

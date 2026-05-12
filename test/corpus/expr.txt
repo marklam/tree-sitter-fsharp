@@ -662,6 +662,41 @@ let f xs =
                   (unit))))))))))
 
 ================================================================================
+interpolated string on new line after let-binding with if-then-else
+================================================================================
+
+let f x =
+    let extra = if true then 1 else 2
+    $"y"
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (argument_patterns
+          (long_identifier
+            (identifier))))
+      (declaration_expression
+        (function_or_value_defn
+          (value_declaration_left
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier))))
+          (if_expression
+            (const
+              (bool))
+            (const
+              (int))
+            (const
+              (int))))
+        (const
+          (string
+            (format_string)))))))
+
+================================================================================
 index list expressions
 ================================================================================
 
