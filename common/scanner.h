@@ -94,10 +94,16 @@ static inline bool peek_is_paren_indent(Scanner *scanner) {
 // Returns true if the '<' should be treated as a type application opener.
 static inline bool is_type_application_open(TSLexer *lexer) {
   // We've already seen '<', now peek forward.
-  // If immediately '>' this is '<>' (empty type args).
   // Track angle bracket depth to find the matching '>'.
   int angle_depth = 1;
   int paren_depth = 0;
+  // The first non-whitespace character after '<' must be a valid type-arg
+  // START character (identifier, quoted-typar, SRTP marker, etc.). Operator
+  // characters like '/', '*', '>', '<', '=' immediately after '<' indicate
+  // a user-defined infix operator (e.g., `</>`, `<*>`, `<>`) — not a type
+  // application. Once we've seen one valid type-arg character, further
+  // operator-like characters (`/` in `<m/s>`, etc.) are permitted.
+  bool saw_type_arg_start = false;
 
   while (!lexer->eof(lexer) && angle_depth > 0) {
     int32_t c = lexer->lookahead;
@@ -107,8 +113,47 @@ static inline bool is_type_application_open(TSLexer *lexer) {
       return false;
     }
 
+    if (c == ' ' || c == '\t') {
+      advance(lexer);
+      continue;
+    }
+
+    if (!saw_type_arg_start) {
+      // Only identifier-like / typar-like characters are valid at the start
+      // of type arguments. Reject operator chars (/, *, =, <, -, |, etc.)
+      // so they fall through to infix_op interpretation (e.g., `</>`, `<*>`,
+      // `<<`, `<=`, `<-`, `<|`).
+      if (is_word_char(c) || c == '\'' || c == '^' || c == '#' || c == '_') {
+        saw_type_arg_start = true;
+        advance(lexer);
+        continue;
+      }
+      // '(' introduces a parenthesized type or SRTP member-constraint group.
+      if (c == '(') {
+        saw_type_arg_start = true;
+        paren_depth++;
+        advance(lexer);
+        continue;
+      }
+      // '{' introduces an anonymous record type, e.g. `<{| x: int |}>`.
+      if (c == '{') {
+        saw_type_arg_start = true;
+        advance(lexer);
+        continue;
+      }
+      // '>' immediately after '<' is an explicit empty type argument list:
+      // `Array.empty<>`. Close out and report type application.
+      if (c == '>') {
+        return true;
+      }
+      // Anything else as the first content char means this isn't a type
+      // application — bail out so the grammar treats '<' as the start of an
+      // infix operator instead.
+      return false;
+    }
+
     // Valid type argument characters
-    if (is_word_char(c) || c == ' ' || c == '\t' || c == ',' || c == '*' ||
+    if (is_word_char(c) || c == ',' || c == '*' ||
         c == '.' || c == ':' || c == '#' || c == '^' || c == '/' || c == '|' ||
         c == '{' || c == '}' || c == '[' || c == ']') {
       advance(lexer);

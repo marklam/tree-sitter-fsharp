@@ -142,6 +142,29 @@ do
             (identifier)))))))
 
 ================================================================================
+infix op starting with less-than (no space)
+================================================================================
+
+let p = (path</>"foo")
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (paren_expression
+        (infix_expression
+          (long_identifier_or_op
+            (identifier))
+          (infix_op)
+          (const
+            (string)))))))
+
+================================================================================
 typed expression
 ================================================================================
 
