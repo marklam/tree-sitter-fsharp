@@ -697,6 +697,38 @@ let f x =
             (format_string)))))))
 
 ================================================================================
+leading-comma tuple inside parens
+================================================================================
+
+let x =
+    foo(
+        arg1
+        , arg2
+        , arg3
+    )
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (application_expression
+        (long_identifier_or_op
+          (identifier))
+        (tuple_expression
+          (long_identifier_or_op
+            (identifier))
+          (tuple_expression
+            (long_identifier_or_op
+              (identifier))
+            (long_identifier_or_op
+              (identifier))))))))
+
+================================================================================
 index list expressions
 ================================================================================
 
