@@ -10225,7 +10225,7 @@
     },
     "preproc_if_in_expression": {
       "type": "PREC",
-      "value": -2,
+      "value": -1,
       "content": {
         "type": "SEQ",
         "members": [
@@ -10299,7 +10299,7 @@
     },
     "preproc_else_in_expression": {
       "type": "PREC",
-      "value": -2,
+      "value": -1,
       "content": {
         "type": "SEQ",
         "members": [
@@ -10688,14 +10688,6 @@
     [
       "declaration_expression",
       "_comp_or_range_expression"
-    ],
-    [
-      "preproc_if_in_expression",
-      "preproc_if_in_module_body"
-    ],
-    [
-      "preproc_else_in_expression",
-      "preproc_else_in_module_body"
     ],
     [
       "rules"

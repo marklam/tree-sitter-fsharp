@@ -107,8 +107,6 @@ module.exports = grammar({
     [$._module_elem, $.preproc_if_in_expression],
     [$._module_expression, $._expression],
     [$.declaration_expression, $._comp_or_range_expression],
-    [$.preproc_if_in_expression, $.preproc_if_in_module_body],
-    [$.preproc_else_in_expression, $.preproc_else_in_module_body],
     [$.rules],
     [$.prefixed_expression, $._low_prec_app, $.infix_expression],
     [$._type, $._argument_type],
@@ -2275,8 +2273,17 @@ module.exports = grammar({
     ),
     ...preprocIf(
       "_in_expression",
+      // Wrap the body in a `seq(_expression, optional(_newline))*` so the
+      // body is parsed as a regular expression sequence. Without this an
+      // expression-position `#if A\nlet x = 1\n2\n#endif` (let-binding
+      // followed by its in-body) gets picked up by `preproc_if_in_module_body`
+      // — its `_module_body_elem` matches the `let` as a sibling
+      // `function_or_value_defn` and then `2` errors because it isn't a
+      // module element. Higher precedence than `_in_module_body` so the
+      // expression-context interpretation is preferred when both are
+      // reachable.
       ($) => repeat(seq(optional($._newline), $._expression)),
-      -2,
+      -1,
     ),
     ...preprocIf(
       "_in_module_body",
