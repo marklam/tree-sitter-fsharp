@@ -837,7 +837,10 @@ module.exports = grammar({
     function_expression: ($) =>
       prec(
         PREC.MATCH_EXPR,
-        seq("function", scoped($.rules, $._indent, $._dedent)),
+        seq(
+          "function",
+          choice(scoped($.rules, $._indent, $._dedent), $.rules),
+        ),
       ),
 
     mutate_expression: ($) =>
