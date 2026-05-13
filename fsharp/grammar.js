@@ -2287,6 +2287,12 @@ module.exports = grammar({
           token.immediate(prec(1, /[+-]/)),
           /[-+=<>|&^*'%@?][!%&*+./<=>@^|~?-]*/,
           /\/[!%&*+.<=>@^|~?-]*/,
+          // F# allows operators starting with `.` (e.g. `.>>`, `.>`,
+          // `.<`, `.>=`, `.+`, FParsec-style combinators). The leading
+          // `.` is followed by at least one operator char so it isn't
+          // confused with member-access `.` (which is always followed
+          // by an identifier).
+          /\.[!%&*+/<=>@^|~?-][!%&*+./<=>@^|~?-]*/,
           "=",
           "!=",
           ":=",
