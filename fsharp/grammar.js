@@ -385,6 +385,9 @@ module.exports = grammar({
       prec.left(
         2,
         seq(
+          // Allow `let [<Literal>] private x = …` — attributes before
+          // the access modifier are common for `[<Literal>]` constants.
+          optional($.attributes),
           optional("mutable"),
           optional("inline"),
           optional($.access_modifier),

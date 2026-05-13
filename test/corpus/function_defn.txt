@@ -455,6 +455,30 @@ let freq: float<1/s> = 1.0
         (float)))))
 
 ================================================================================
+let value with attributes and access modifier
+================================================================================
+
+let [<Literal>] private port = 8080
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (attributes
+          (attribute
+            (simple_type
+              (long_identifier
+                (identifier)))))
+        (access_modifier)
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      body: (const
+        (int)))))
+
+================================================================================
 type argument with not-null constraint (F# 9)
 ================================================================================
 
