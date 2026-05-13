@@ -5161,3 +5161,46 @@ let mk () = new 'T()
         (type_argument
           (identifier))
         (unit)))))
+
+================================================================================
+inline IL expression
+================================================================================
+
+#nowarn "42"
+module X
+let inline cast<'a, 'b> (a : 'a) : 'b = (# "" a : 'b #)
+
+--------------------------------------------------------------------------------
+
+(file
+  (compiler_directive_decl
+    (string))
+  (named_module
+    (long_identifier
+      (identifier))
+    (declaration_expression
+      (function_or_value_defn
+        (function_declaration_left
+          (identifier)
+          (type_arguments
+            (type_argument_defn
+              (type_argument
+                (identifier)))
+            (type_argument_defn
+              (type_argument
+                (identifier))))
+          (argument_patterns
+            (typed_pattern
+              (identifier_pattern
+                (long_identifier_or_op
+                  (identifier)))
+              (type_argument
+                (identifier)))))
+        (type_argument
+          (identifier))
+        (inline_il_expression
+          (string)
+          (long_identifier_or_op
+            (identifier))
+          (type_argument
+            (identifier)))))))

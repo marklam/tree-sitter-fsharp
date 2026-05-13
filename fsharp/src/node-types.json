@@ -68,6 +68,10 @@
         "named": true
       },
       {
+        "type": "inline_il_expression",
+        "named": true
+      },
+      {
         "type": "list_expression",
         "named": true
       },
@@ -2310,6 +2314,29 @@
     "type": "infix_op",
     "named": true,
     "fields": {}
+  },
+  {
+    "type": "inline_il_expression",
+    "named": true,
+    "fields": {},
+    "children": {
+      "multiple": true,
+      "required": true,
+      "types": [
+        {
+          "type": "_expression",
+          "named": true
+        },
+        {
+          "type": "_type",
+          "named": true
+        },
+        {
+          "type": "string",
+          "named": true
+        }
+      ]
+    }
   },
   {
     "type": "int16",

@@ -115,6 +115,7 @@ module.exports = grammar({
     [$.declaration_expression, $._comp_or_range_expression],
     [$._srtp_type_argument, $._static_type_identifier],
     [$.type_argument],
+    [$.paren_expression, $.inline_il_expression],
     [$._class_type_body_inner, $._type_defn_elements],
     [$.rules],
     [$.prefixed_expression, $._low_prec_app, $.infix_expression],
@@ -572,6 +573,7 @@ module.exports = grammar({
         "null",
         $.const,
         $.paren_expression,
+        $.inline_il_expression,
         $.begin_end_expression,
         $.long_identifier_or_op,
         $.typed_expression,
@@ -978,6 +980,25 @@ module.exports = grammar({
 
     paren_expression: ($) =>
       prec(PREC.PAREN_EXPR, seq("(", $._paren_expression_block, ")")),
+
+    // F# inline IL: `(# "il-instr" arg1 arg2 ... : returnType #)`. Used
+    // in low-level code like `(# "" a : 'b #)` for byref/cast tricks.
+    // Common in libraries (FSharp.UMX, Fleece). The `#nowarn "42"` is
+    // required at file level to allow it.
+    inline_il_expression: ($) =>
+      prec.right(
+        PREC.PAREN_EXPR + 100,
+        seq(
+          "(",
+          "#",
+          alias($._string_literal, $.string),
+          optional($._expression),
+          ":",
+          $._type,
+          "#",
+          ")",
+        ),
+      ),
 
     _high_prec_app: ($) =>
       prec.left(
