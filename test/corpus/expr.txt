@@ -5109,6 +5109,45 @@ let f () =
           (unit))))))
 
 ================================================================================
+extern declaration with return-type attribute
+================================================================================
+
+[<DllImport("a.dll")>]
+extern [<MarshalAs(UnmanagedType.Bool)>] bool DeleteObject(nativeint hObject)
+
+--------------------------------------------------------------------------------
+
+(file
+  (extern_binding
+    (attributes
+      (attribute
+        (simple_type
+          (long_identifier
+            (identifier)))
+        (paren_expression
+          (const
+            (string)))))
+    (attributes
+      (attribute
+        (simple_type
+          (long_identifier
+            (identifier)))
+        (paren_expression
+          (long_identifier_or_op
+            (long_identifier
+              (identifier)
+              (identifier))))))
+    (simple_type
+      (long_identifier
+        (identifier)))
+    (identifier)
+    (extern_param
+      (simple_type
+        (long_identifier
+          (identifier)))
+      (identifier))))
+
+================================================================================
 extern declaration with byref parameter
 ================================================================================
 

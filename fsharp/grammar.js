@@ -2121,6 +2121,9 @@ module.exports = grammar({
       seq(
         optional($.attributes),
         "extern",
+        // P/Invoke `extern` lets you attribute the RETURN type, e.g.
+        // `extern [<MarshalAs(UnmanagedType.Bool)>] bool DeleteObject(...)`.
+        optional($.attributes),
         field("return_type", $._type),
         field("name", $.identifier),
         "(",
