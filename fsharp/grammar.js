@@ -119,6 +119,7 @@ module.exports = grammar({
     [$.measure_atom, $.measure],
     [$._class_type_body_inner, $._type_defn_elements],
     [$.rules],
+    [$.types, $.type_attribute],
     [$.prefixed_expression, $._low_prec_app, $.infix_expression],
     [$._type, $._argument_type],
     [$._type, $._curried_return_type],
@@ -871,7 +872,10 @@ module.exports = grammar({
         seq(
           $._expression,
           $._tyapp_open,
-          optional(choice($.types, $.measure)),
+          // `type_attributes` allows mixing `_type`, `_static_parameter`,
+          // and `measure` — so e.g. `Foo<1, uint16>` works (1 as measure
+          // alongside uint16 as type).
+          optional(choice($.types, $.measure, $.type_attributes)),
           prec(PREC.PAREN_EXPR, ">"),
         ),
       ),

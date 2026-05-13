@@ -3285,6 +3285,10 @@
                   {
                     "type": "SYMBOL",
                     "name": "measure"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "type_attributes"
                   }
                 ]
               },
@@ -11220,6 +11224,10 @@
     ],
     [
       "rules"
+    ],
+    [
+      "types",
+      "type_attribute"
     ],
     [
       "prefixed_expression",

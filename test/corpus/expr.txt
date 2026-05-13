@@ -5044,6 +5044,39 @@ extern int SendMessage(nativeint hWnd, int msg, nativeint wParam, nativeint lPar
       (identifier))))
 
 ================================================================================
+typed_expression with measure and type args mixed
+================================================================================
+
+let x = ImageData<1, uint16>(1, 2)
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      body: (application_expression
+        (typed_expression
+          (long_identifier_or_op
+            (identifier))
+          (type_attributes
+            (type_attribute
+              (measure
+                (measure_atom)))
+            (type_attribute
+              (simple_type
+                (long_identifier
+                  (identifier))))))
+        (tuple_expression
+          (const
+            (int))
+          (const
+            (int)))))))
+
+================================================================================
 extern declaration with byref parameter
 ================================================================================
 
