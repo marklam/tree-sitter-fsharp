@@ -455,6 +455,38 @@ let freq: float<1/s> = 1.0
         (float)))))
 
 ================================================================================
+type argument with not-null constraint (F# 9)
+================================================================================
+
+let inline f<'T when 'T : not null> (x: 'T) = x
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (type_arguments
+          (type_argument_defn
+            (type_argument
+              (identifier)))
+          (type_argument_constraints
+            (constraint
+              (type_argument
+                (identifier)))))
+        (argument_patterns
+          (typed_pattern
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier)))
+            (type_argument
+              (identifier)))))
+      body: (long_identifier_or_op
+        (long_identifier
+          (identifier))))))
+
+================================================================================
 inline value binding with type arguments and constraint, no args
 ================================================================================
 

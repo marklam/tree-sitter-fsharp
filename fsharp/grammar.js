@@ -1513,6 +1513,7 @@ module.exports = grammar({
           ),
           seq($.type_argument, ":", "struct"),
           seq($.type_argument, ":", "not", "struct"),
+          seq($.type_argument, ":", "not", "null"),
           seq($.type_argument, ":", "enum", "<", $._type, ">"),
           seq($.type_argument, ":", "unmanaged"),
           seq($.type_argument, ":", "equality"),
