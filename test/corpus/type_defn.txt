@@ -3350,3 +3350,44 @@ type ``X Should``() =
                   (infix_op)
                   (const
                     (int)))))))))))
+
+================================================================================
+type extension with empty body terminated by end
+================================================================================
+
+namespace A
+
+[<AutoOpen>]
+module B =
+    let f x = x
+
+    type ComboBoxItem with
+        end
+
+--------------------------------------------------------------------------------
+
+(file
+  (namespace
+    (long_identifier
+      (identifier))
+    (module_defn
+      (attributes
+        (attribute
+          (simple_type
+            (long_identifier
+              (identifier)))))
+      (identifier)
+      (declaration_expression
+        (function_or_value_defn
+          (function_declaration_left
+            (identifier)
+            (argument_patterns
+              (long_identifier
+                (identifier))))
+          (long_identifier_or_op
+            (identifier))))
+      (type_definition
+        (type_extension
+          (type_name
+            (identifier))
+          (type_extension_elements))))))

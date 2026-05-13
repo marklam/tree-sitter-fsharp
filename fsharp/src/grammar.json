@@ -6315,8 +6315,16 @@
                 "name": "_indent"
               },
               {
-                "type": "SYMBOL",
-                "name": "_type_extension_inner"
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "_type_extension_inner"
+                  },
+                  {
+                    "type": "BLANK"
+                  }
+                ]
               },
               {
                 "type": "SYMBOL",
@@ -6324,6 +6332,18 @@
               }
             ]
           }
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "end"
+            },
+            {
+              "type": "BLANK"
+            }
+          ]
         }
       ]
     },

@@ -1586,8 +1586,15 @@ module.exports = grammar({
         alias($._type_extension_with, $.type_extension_elements),
       ),
 
+    // `type X with … end` (degenerate empty augmentation, or one closed by
+    // an explicit `end`) is legal F#. The body is optional and may be
+    // terminated by an `end` keyword.
     _type_extension_with: ($) =>
-      seq("with", scoped($._type_extension_inner, $._indent, $._dedent)),
+      seq(
+        "with",
+        scoped(optional($._type_extension_inner), $._indent, $._dedent),
+        optional("end"),
+      ),
 
     delegate_type_defn: ($) =>
       seq($.type_name, "=", scoped($.delegate_signature, $._indent, $._dedent)),
