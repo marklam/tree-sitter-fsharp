@@ -1895,7 +1895,10 @@ module.exports = grammar({
           optional($.primary_constr_args),
           "=",
           choice(
-            alias($.inline_line_comment, $.line_comment),
+            // (the inline-line-comment-as-body alternative used to live
+            // here — removed because it greedy-matched cases like
+            // `type T = // c\n    { fields }` and orphaned the body.
+            // Comments in this position are picked up via `extras`.)
             scoped($._class_type_body, $._indent, $._dedent),
             seq(
               choice("begin", "class"),
