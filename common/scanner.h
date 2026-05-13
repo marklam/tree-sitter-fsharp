@@ -152,10 +152,12 @@ static inline bool is_type_application_open(TSLexer *lexer) {
       return false;
     }
 
-    // Valid type argument characters
+    // Valid type argument characters. `&` is permitted after a valid
+    // type-arg start to support F# 7+ inline intersection constraints
+    // like `<'T & #IFace>` (in `type_argument_defn`).
     if (is_word_char(c) || c == ',' || c == '*' ||
         c == '.' || c == ':' || c == '#' || c == '^' || c == '/' || c == '|' ||
-        c == '{' || c == '}' || c == '[' || c == ']') {
+        c == '{' || c == '}' || c == '[' || c == ']' || c == '&') {
       advance(lexer);
       continue;
     }
