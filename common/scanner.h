@@ -1227,23 +1227,23 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
     }
 
     if (found_end_of_line) {
-      // Leading-comma tuple/argument lists are a common F# DSL idiom:
+      // Leading-comma tuple/argument lists are a common F# DSL idiom,
+      // both inside parens:
       //   foo(
       //       arg1
       //       , arg2
-      //       , arg3
       //   )
+      // and at match-arm / let-body level returning a tuple:
+      //   | Foo ->
+      //       { x with A = 1 }
+      //       , [], NoOp
       // The parser threads tuple_expression / argument lists through
       // back-to-back `_expression , _expression` shapes — a NEWLINE between
-      // `arg1` and `,` shifts the parser past the tuple continuation point
-      // and `,` then errors. Inside a paren-bounded scope, suppress same-
-      // indent NEWLINE when the next non-whitespace char is `,`; the
-      // following `,` token lands directly and the tuple extends as
-      // expected. The check is gated on `is_paren_indent` so module-body
-      // / let-body sequential `, ` lines (which would be illegal F#) still
-      // surface as parse errors.
-      bool suppress_newline_for_leading_comma =
-          is_paren_indent && lexer->lookahead == ',';
+      // the previous element and `,` shifts the parser past the tuple
+      // continuation point and `,` then errors. Suppress same-indent
+      // NEWLINE when the next non-whitespace char is `,` so the `,` lands
+      // directly and the tuple extends as expected.
+      bool suppress_newline_for_leading_comma = lexer->lookahead == ',';
       if (indent_length == current_indent_length && indent_length > 0 &&
           !found_start_of_infix_op && !found_bracket_end &&
           !suppress_newline_for_leading_comma) {

@@ -5253,3 +5253,48 @@ let h = a .>=. b
         (long_identifier_or_op
           (long_identifier
             (identifier)))))))
+
+================================================================================
+leading-comma tuple continuation outside parens
+================================================================================
+
+let f x =
+    match x with
+    | Foo ->
+        { x with A = 1 }
+        , [], NoOp
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (argument_patterns
+          (long_identifier
+            (identifier))))
+      (match_expression
+        (long_identifier_or_op
+          (identifier))
+        (rules
+          (rule
+            (identifier_pattern
+              (long_identifier_or_op
+                (identifier)))
+            (tuple_expression
+              (brace_expression
+                (with_field_expression
+                  (long_identifier_or_op
+                    (identifier))
+                  (field_initializers
+                    (field_initializer
+                      (long_identifier
+                        (identifier))
+                      (const
+                        (int))))))
+              (tuple_expression
+                (list_expression)
+                (long_identifier_or_op
+                  (long_identifier
+                    (identifier)))))))))))
