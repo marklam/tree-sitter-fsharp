@@ -5298,3 +5298,62 @@ let f x =
                 (long_identifier_or_op
                   (long_identifier
                     (identifier)))))))))))
+
+================================================================================
+negative float arg followed by another float arg
+================================================================================
+
+let r = Gen.double (Range.constant -1000. 1000.)
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (application_expression
+        (long_identifier_or_op
+          (long_identifier
+            (identifier)
+            (identifier)))
+        (paren_expression
+          (application_expression
+            (application_expression
+              (long_identifier_or_op
+                (long_identifier
+                  (identifier)
+                  (identifier)))
+              (const
+                (float)))
+            (const
+              (float))))))))
+
+================================================================================
+type application with measure literal 1
+================================================================================
+
+let f = SizeExact<1>(x, y)
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (application_expression
+        (typed_expression
+          (long_identifier_or_op
+            (identifier))
+          (measure
+            (measure_atom)))
+        (tuple_expression
+          (long_identifier_or_op
+            (identifier))
+          (long_identifier_or_op
+            (identifier)))))))

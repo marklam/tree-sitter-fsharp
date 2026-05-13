@@ -116,6 +116,7 @@ module.exports = grammar({
     [$._srtp_type_argument, $._static_type_identifier],
     [$.type_argument],
     [$.paren_expression, $.inline_il_expression],
+    [$.measure_atom, $.measure],
     [$._class_type_body_inner, $._type_defn_elements],
     [$.rules],
     [$.prefixed_expression, $._low_prec_app, $.infix_expression],
@@ -1385,7 +1386,16 @@ module.exports = grammar({
 
     measure_quotient: ($) => prec.left(5, seq($._measure_operand, "/", $._measure_operand)),
 
-    measure: ($) => choice($.measure_quotient, $.measure_power, seq("(", $.measure, ")")),
+    measure: ($) =>
+      choice(
+        $.measure_quotient,
+        $.measure_power,
+        // Bare measure atoms — supports literal `1` (dimensionless),
+        // typars, and simple type names used as units of measure:
+        //   SizeExact<1>, float<m>, int<'u>
+        $.measure_atom,
+        seq("(", $.measure, ")"),
+      ),
 
     simple_type: ($) => choice($.long_identifier, $._static_type_identifier),
     generic_type: ($) =>
@@ -2346,10 +2356,15 @@ module.exports = grammar({
       prec.right(
         alias(
           choice(
-            seq($.int, token.immediate("."), optional($.int)),
+            // Use `token.immediate(/[0-9]+/)` for the fractional digits
+            // so they have to be glued to the `.` — otherwise `1000. 2000`
+            // glued into one float with `2000` as the
+            // (whitespace-separated) fractional part, swallowing the next
+            // argument in `Range.constant -1000. 2000.`.
+            seq($.int, token.immediate("."), optional(token.immediate(/[0-9]+/))),
             seq(
               $.int,
-              optional(seq(token.immediate("."), $.int)),
+              optional(seq(token.immediate("."), token.immediate(/[0-9]+/))),
               token.immediate(/[eE][+-]?/),
               $.int,
             ),

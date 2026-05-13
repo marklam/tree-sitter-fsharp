@@ -4791,6 +4791,10 @@
           "name": "measure_power"
         },
         {
+          "type": "SYMBOL",
+          "name": "measure_atom"
+        },
+        {
           "type": "SEQ",
           "members": [
             {
@@ -10066,8 +10070,11 @@
                   "type": "CHOICE",
                   "members": [
                     {
-                      "type": "SYMBOL",
-                      "name": "int"
+                      "type": "IMMEDIATE_TOKEN",
+                      "content": {
+                        "type": "PATTERN",
+                        "value": "[0-9]+"
+                      }
                     },
                     {
                       "type": "BLANK"
@@ -10097,8 +10104,11 @@
                           }
                         },
                         {
-                          "type": "SYMBOL",
-                          "name": "int"
+                          "type": "IMMEDIATE_TOKEN",
+                          "content": {
+                            "type": "PATTERN",
+                            "value": "[0-9]+"
+                          }
                         }
                       ]
                     },
@@ -11070,6 +11080,10 @@
     [
       "paren_expression",
       "inline_il_expression"
+    ],
+    [
+      "measure_atom",
+      "measure"
     ],
     [
       "_class_type_body_inner",
