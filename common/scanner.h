@@ -379,6 +379,36 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
     return false;
   }
 
+  // BLOCK_COMMENT_CONTENT is requested between `(*` and `*)`. Run it BEFORE
+  // the main whitespace/preprocessor loop so a `#` inside a block comment
+  // (e.g. `(* # comment *)`) isn't mistakenly consumed as the start of a
+  // preprocessor directive.
+  if (valid_symbols[BLOCK_COMMENT_CONTENT] && !valid_symbols[ERROR_SENTINEL]) {
+    lexer->mark_end(lexer);
+    while (true) {
+      if (lexer->lookahead == '\0') {
+        break;
+      }
+      if (lexer->lookahead != '(' && lexer->lookahead != '*') {
+        advance(lexer);
+      } else if (lexer->lookahead == '*') {
+        lexer->mark_end(lexer);
+        advance(lexer);
+        if (lexer->lookahead == ')') {
+          break;
+        }
+      } else if (scan_block_comment(lexer)) {
+        lexer->mark_end(lexer);
+        advance(lexer);
+        if (lexer->lookahead == '*') {
+          break;
+        }
+      }
+    }
+    lexer->result_symbol = BLOCK_COMMENT_CONTENT;
+    return true;
+  }
+
   // Type application '<' disambiguation (F# spec Section 15.3).
   // When the grammar expects TYAPP_OPEN (i.e., a '<' immediately after an expression),
   // peek ahead to determine if the content between '<' and '>' looks like type arguments.
@@ -1286,32 +1316,6 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
         return true;
       }
     }
-  }
-
-  if (valid_symbols[BLOCK_COMMENT_CONTENT] && !valid_symbols[ERROR_SENTINEL]) {
-    lexer->mark_end(lexer);
-    while (true) {
-      if (lexer->lookahead == '\0') {
-        break;
-      }
-      if (lexer->lookahead != '(' && lexer->lookahead != '*') {
-        advance(lexer);
-      } else if (lexer->lookahead == '*') {
-        lexer->mark_end(lexer);
-        advance(lexer);
-        if (lexer->lookahead == ')') {
-          break;
-        }
-      } else if (scan_block_comment(lexer)) {
-        lexer->mark_end(lexer);
-        advance(lexer);
-        if (lexer->lookahead == '*') {
-          break;
-        }
-      }
-    }
-    lexer->result_symbol = BLOCK_COMMENT_CONTENT;
-    return true;
   }
 
   return false;
