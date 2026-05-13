@@ -2418,7 +2418,12 @@ module.exports = grammar({
         choice(
           seq(
             "#nowarn",
-            choice(alias($._string_literal, $.string), $.int),
+            choice(
+              alias($._string_literal, $.string),
+              $.int,
+              // F# 9+ allows bare identifier form `#nowarn FS3261`.
+              $.identifier,
+            ),
             $._newline_not_aligned,
           ),
           seq("#warnon", $.int, $._newline_not_aligned),
