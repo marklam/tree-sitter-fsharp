@@ -3569,3 +3569,51 @@ type T(x) =
               (long_identifier
                 (identifier)
                 (identifier)))))))))
+
+================================================================================
+multiple bare type declarations inside nested module
+================================================================================
+
+module Orders =
+    module InternalDTO =
+        type [<Measure>] private userId
+        type [<Measure>] private accountId
+        type [<Measure>] private patientId
+
+--------------------------------------------------------------------------------
+
+(file
+  (module_defn
+    (identifier)
+    (module_defn
+      (identifier)
+      (type_definition
+        (type_declaration
+          (type_name
+            (attributes
+              (attribute
+                (simple_type
+                  (long_identifier
+                    (identifier)))))
+            (access_modifier)
+            (identifier))))
+      (type_definition
+        (type_declaration
+          (type_name
+            (attributes
+              (attribute
+                (simple_type
+                  (long_identifier
+                    (identifier)))))
+            (access_modifier)
+            (identifier))))
+      (type_definition
+        (type_declaration
+          (type_name
+            (attributes
+              (attribute
+                (simple_type
+                  (long_identifier
+                    (identifier)))))
+            (access_modifier)
+            (identifier)))))))

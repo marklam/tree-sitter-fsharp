@@ -515,6 +515,13 @@ static bool scan(Scanner *scanner, TSLexer *lexer, const bool *valid_symbols) {
   }
 
   if (valid_symbols[TYPE_DECL_NEWLINE]) {
+    // Anchor mark_end here BEFORE any peek-ahead skip()s. Otherwise the
+    // peek advances the lexer past the newline and the subsequent
+    // scanner call no longer sees `\n`, so a regular NEWLINE token can't
+    // fire to satisfy the surrounding module-body's element separator.
+    // With this anchor the token is zero-width and the `\n` remains
+    // available for the next scan.
+    lexer->mark_end(lexer);
     // Only fire at EOF or newline; if the current character is something else
     // (e.g. '=' during GLR exploration), fall through to general scanning —
     // the lexer position is unchanged so this is safe.
