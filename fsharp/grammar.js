@@ -114,6 +114,7 @@ module.exports = grammar({
     [$._module_expression, $._expression],
     [$.declaration_expression, $._comp_or_range_expression],
     [$._srtp_type_argument, $._static_type_identifier],
+    [$.type_argument],
     [$._class_type_body_inner, $._type_defn_elements],
     [$.rules],
     [$.prefixed_expression, $._low_prec_app, $.infix_expression],
@@ -1474,13 +1475,26 @@ module.exports = grammar({
       seq("when", $.constraint, repeat(seq("and", $.constraint))),
 
     type_argument: ($) =>
-      prec(
+      prec.left(
         10,
         choice(
           "_",
           seq(
             $._static_type_identifier,
             repeat(seq("or", $._static_type_identifier)),
+          ),
+          // F# SRTP allows parenthesised `or`-joined operands on the LHS
+          // of a member constraint. Each operand can be a typar
+          // (`^pix`, `'T`) or a type name (`MaxValue`):
+          //   when (^A or ^T) : (static member F : unit -> int)
+          //   when (^pix or MaxValue) : (static member F : ^pix -> int)
+          seq(
+            "(",
+            choice($._static_type_identifier, $.long_identifier),
+            repeat(
+              seq("or", choice($._static_type_identifier, $.long_identifier)),
+            ),
+            ")",
           ),
         ),
       ),

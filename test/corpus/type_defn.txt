@@ -3492,3 +3492,40 @@ type View =
                   (identifier))))
             (const
               (unit))))))))
+
+================================================================================
+SRTP constraint with parenthesised or-joined typars
+================================================================================
+
+let inline f<^A when (^A or B) : (static member F : ^A -> int)> () = ()
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (type_arguments
+          (type_argument_defn
+            (type_argument
+              (identifier)))
+          (type_argument_constraints
+            (constraint
+              (type_argument
+                (identifier)
+                (long_identifier
+                  (identifier)))
+              (trait_member_constraint
+                (identifier)
+                (function_type
+                  (type_argument
+                    (identifier))
+                  (simple_type
+                    (long_identifier
+                      (identifier))))))))
+        (argument_patterns
+          (const
+            (unit))))
+      (const
+        (unit)))))
