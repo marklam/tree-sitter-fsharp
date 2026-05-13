@@ -57,7 +57,12 @@ module.exports = grammar({
     $.xml_doc,
     $.preproc_line,
     $.compiler_directive_decl,
-    $.fsi_directive_decl,
+    // `fsi_directive_decl` removed from extras (was: $.fsi_directive_decl).
+    // It still appears as a `_module_elem` choice, so `#r "\u2026"`, `#load "\u2026"`
+    // etc. continue to parse at top level. As an extra, its `#I`/`#r`/etc.
+    // string tokens lex everywhere \u2014 even inside `<'T & #IComparable>`
+    // where the lexer would greedily consume `#I` as the include-path
+    // directive, leaving `Comparable` orphaned.
     ";",
   ],
 
@@ -1468,7 +1473,15 @@ module.exports = grammar({
         ),
       ),
 
-    type_argument_defn: ($) => seq(optional($.attributes), $.type_argument),
+    // F# 7+ inline intersection constraint on a type parameter:
+    //   <'T & #IFace>      ≡  <'T when 'T :> IFace>
+    //   <'T & #A & #B>     ≡  multi-constraint shorthand
+    type_argument_defn: ($) =>
+      seq(
+        optional($.attributes),
+        $.type_argument,
+        repeat(seq("&", $.flexible_type)),
+      ),
 
     type_arguments: ($) =>
       seq(

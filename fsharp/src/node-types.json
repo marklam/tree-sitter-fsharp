@@ -1975,7 +1975,6 @@
   {
     "type": "fsi_directive_decl",
     "named": true,
-    "extra": true,
     "fields": {},
     "children": {
       "multiple": false,
@@ -4217,6 +4216,10 @@
       "types": [
         {
           "type": "attributes",
+          "named": true
+        },
+        {
+          "type": "flexible_type",
           "named": true
         },
         {
