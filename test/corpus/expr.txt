@@ -323,8 +323,10 @@ do test.[test]
       (index_expression
         (long_identifier_or_op
           (identifier))
-        (long_identifier_or_op
-          (identifier))))))
+        (slice_ranges
+          (slice_range
+            (long_identifier_or_op
+              (identifier))))))))
 
 ================================================================================
 index expression

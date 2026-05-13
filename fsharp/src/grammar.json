@@ -3235,21 +3235,8 @@
             "value": ".["
           },
           {
-            "type": "CHOICE",
-            "members": [
-              {
-                "type": "FIELD",
-                "name": "index",
-                "content": {
-                  "type": "SYMBOL",
-                  "name": "_expression"
-                }
-              },
-              {
-                "type": "SYMBOL",
-                "name": "slice_ranges"
-              }
-            ]
+            "type": "SYMBOL",
+            "name": "slice_ranges"
           },
           {
             "type": "STRING",
@@ -4359,29 +4346,33 @@
       ]
     },
     "slice_ranges": {
-      "type": "SEQ",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "slice_range"
-        },
-        {
-          "type": "REPEAT",
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "STRING",
-                "value": ","
-              },
-              {
-                "type": "SYMBOL",
-                "name": "slice_range"
-              }
-            ]
+      "type": "PREC_LEFT",
+      "value": 17,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "slice_range"
+          },
+          {
+            "type": "REPEAT",
+            "content": {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": ","
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "slice_range"
+                }
+              ]
+            }
           }
-        }
-      ]
+        ]
+      }
     },
     "_slice_range_special": {
       "type": "PREC_LEFT",
@@ -4531,12 +4522,23 @@
           "name": "_slice_range_special"
         },
         {
-          "type": "SYMBOL",
-          "name": "_expression"
+          "type": "PREC",
+          "value": 17,
+          "content": {
+            "type": "SYMBOL",
+            "name": "_expression"
+          }
         },
         {
-          "type": "STRING",
-          "value": "*"
+          "type": "TOKEN",
+          "content": {
+            "type": "PREC",
+            "value": 10,
+            "content": {
+              "type": "STRING",
+              "value": "*"
+            }
+          }
         }
       ]
     },

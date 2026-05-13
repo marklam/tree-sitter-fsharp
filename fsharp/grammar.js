@@ -861,7 +861,11 @@ module.exports = grammar({
         seq(
           $._expression,
           ".[",
-          choice(field("index", $._expression), $.slice_ranges),
+          // `slice_ranges` already accepts a single `_expression` as one
+          // slice_range, so it covers both `arr.[i]` and `arr.[0,*]`. The
+          // previous explicit `_expression` alternative caused the parser
+          // to commit to a single-index parse and then error on the comma.
+          $.slice_ranges,
           "]",
         ),
       ),
@@ -1278,7 +1282,14 @@ module.exports = grammar({
     //     repeat(seq("|", $.comp_rule)),
     //   )),
 
-    slice_ranges: ($) => seq($.slice_range, repeat(seq(",", $.slice_range))),
+    // The `,` between slice_ranges binds tighter than tuple_expression's
+    // comma, so `arr.[0, *]` is two slice_ranges (`0` and `*`), not a
+    // tuple `(0, *)` with `*` failing to be an expression.
+    slice_ranges: ($) =>
+      prec.left(
+        PREC.TUPLE_EXPR + 1,
+        seq($.slice_range, repeat(seq(",", $.slice_range))),
+      ),
 
     _slice_range_special: ($) =>
       prec.left(
@@ -1304,7 +1315,16 @@ module.exports = grammar({
         ),
       ),
 
-    slice_range: ($) => choice($._slice_range_special, $._expression, "*"),
+    slice_range: ($) =>
+      choice(
+        $._slice_range_special,
+        // Higher precedence than tuple_expression so `arr.[0, *]` doesn't
+        // greedily consume the `,*` as a tuple, which would then fail
+        // because `*` isn't a valid expression on its own.
+        prec(PREC.TUPLE_EXPR + 1, $._expression),
+        // `*` literal needs to win over the infix_op `*` lexer rule.
+        token(prec(10, "*")),
+      ),
 
     //
     // Computation expression (END)
