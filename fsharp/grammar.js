@@ -2037,7 +2037,22 @@ module.exports = grammar({
       prec.left(
         seq(
           "inherit",
-          scoped(seq($._type, optional($._expression)), $._indent, $._dedent),
+          choice(
+            // Existing: type and constructor args share the same indent
+            // scope. Required so `inherit Foo()` keeps `()` inside the
+            // scope on the same line as the type name.
+            scoped(seq($._type, optional($._expression)), $._indent, $._dedent),
+            // F# also allows the call args on a continuation line at an
+            // indent BELOW the type name (anywhere greater than `inherit`):
+            //   inherit Biosignatures.X.Y.LongType
+            //       (
+            //           arg1,
+            //           arg2
+            //       )
+            // Here `_type` is alone in the scope; the arg expression is
+            // matched after `_dedent` fires.
+            seq(scoped($._type, $._indent, $._dedent), $._expression),
+          ),
         ),
       ),
 

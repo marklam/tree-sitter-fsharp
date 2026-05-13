@@ -3529,3 +3529,43 @@ let inline f<^A when (^A or B) : (static member F : ^A -> int)> () = ()
             (unit))))
       (const
         (unit)))))
+
+================================================================================
+class inherit with multi-line constructor args at lower indent
+================================================================================
+
+type T(x) =
+    inherit Foo.Bar.Long.Type
+        (
+            x.A,
+            x.B
+        )
+
+--------------------------------------------------------------------------------
+
+(file
+  (type_definition
+    (anon_type_defn
+      (type_name
+        (identifier))
+      (primary_constr_args
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (class_inherits_decl
+        (simple_type
+          (long_identifier
+            (identifier)
+            (identifier)
+            (identifier)
+            (identifier)))
+        (paren_expression
+          (tuple_expression
+            (long_identifier_or_op
+              (long_identifier
+                (identifier)
+                (identifier)))
+            (long_identifier_or_op
+              (long_identifier
+                (identifier)
+                (identifier)))))))))
