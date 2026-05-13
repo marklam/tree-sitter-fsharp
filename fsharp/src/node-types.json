@@ -1617,6 +1617,10 @@
       "required": true,
       "types": [
         {
+          "type": "attributes",
+          "named": true
+        },
+        {
           "type": "const",
           "named": true
         },

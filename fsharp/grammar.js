@@ -1681,7 +1681,10 @@ module.exports = grammar({
     enum_type_cases: ($) =>
       seq(optional("|"), $.enum_type_case, repeat(seq("|", $.enum_type_case))),
 
-    enum_type_case: ($) => seq($.identifier, "=", $.const),
+    // Enum cases can have attributes, like
+    //   | [<Description("Recall in 3 months")>] RecallInThreeMonths = 1
+    enum_type_case: ($) =>
+      seq(optional($.attributes), $.identifier, "=", $.const),
 
     _union_type_defn_inner: ($) =>
       seq(

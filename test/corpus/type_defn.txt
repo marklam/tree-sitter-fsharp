@@ -3422,3 +3422,36 @@ type T =
               (long_identifier
                 (identifier)))
             (identifier)))))))
+
+================================================================================
+enum case with attribute
+================================================================================
+
+type T =
+    | A                                  = 0
+    | [<Description("X")>] B             = 1
+
+--------------------------------------------------------------------------------
+
+(file
+  (type_definition
+    (enum_type_defn
+      (type_name
+        (identifier))
+      (enum_type_cases
+        (enum_type_case
+          (identifier)
+          (const
+            (int)))
+        (enum_type_case
+          (attributes
+            (attribute
+              (simple_type
+                (long_identifier
+                  (identifier)))
+              (paren_expression
+                (const
+                  (string)))))
+          (identifier)
+          (const
+            (int)))))))
