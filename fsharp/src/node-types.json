@@ -2677,6 +2677,10 @@
           "named": true
         },
         {
+          "type": "extern_binding",
+          "named": true
+        },
+        {
           "type": "identifier",
           "named": true
         },

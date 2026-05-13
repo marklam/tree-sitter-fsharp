@@ -7743,6 +7743,19 @@
                 ]
               },
               {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "static"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "extern_binding"
+                  }
+                ]
+              },
+              {
                 "type": "SYMBOL",
                 "name": "additional_constr_defn"
               }

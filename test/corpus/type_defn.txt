@@ -3391,3 +3391,34 @@ module B =
           (type_name
             (identifier))
           (type_extension_elements))))))
+
+================================================================================
+type with static extern member (P/Invoke)
+================================================================================
+
+type T =
+    [<DllImport("user32.dll")>]
+    static extern nativeint GetDesktopWindow()
+
+--------------------------------------------------------------------------------
+
+(file
+  (type_definition
+    (anon_type_defn
+      (type_name
+        (identifier))
+      (type_extension_elements
+        (member_defn
+          (attributes
+            (attribute
+              (simple_type
+                (long_identifier
+                  (identifier)))
+              (paren_expression
+                (const
+                  (string)))))
+          (extern_binding
+            (simple_type
+              (long_identifier
+                (identifier)))
+            (identifier)))))))

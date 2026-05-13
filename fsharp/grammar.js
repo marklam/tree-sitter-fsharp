@@ -1831,6 +1831,9 @@ module.exports = grammar({
               $._type,
             ),
             seq("static", $.value_declaration),
+            // `static extern <return_type> <name>(...)` — a P/Invoke
+            // declaration inside a class. Reuses `extern_binding`'s shape.
+            seq("static", $.extern_binding),
             $.additional_constr_defn,
           ),
         ),
