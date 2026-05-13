@@ -229,7 +229,15 @@ module.exports = grammar({
         $.type_definition,
         $.exception_definition,
         $.extern_binding,
-        $._expression,
+        // `_module_expression` (not full `_expression`) so a top-level
+        // `f x \n let y = …` doesn't extend `f x` as `_low_prec_app` whose
+        // second `_expression` is `declaration_expression(let y = …, in:
+        // MISSING)`. At module / file / namespace top level, F# only allows
+        // `value_declaration` (no `in`) for `let`, which is already covered
+        // by the `value_declaration` alias above. Excluding `_expression`'s
+        // `declaration_expression` and `sequential_expression` here forces
+        // `let` to start a new sibling element instead of chaining.
+        $._module_expression,
         $.preproc_if,
         alias($._attribute_expression, $.declaration_expression),
         // $.exception_defn

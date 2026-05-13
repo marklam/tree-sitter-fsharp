@@ -422,7 +422,7 @@
         },
         {
           "type": "SYMBOL",
-          "name": "_expression"
+          "name": "_module_expression"
         },
         {
           "type": "SYMBOL",
