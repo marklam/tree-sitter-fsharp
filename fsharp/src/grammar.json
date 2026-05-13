@@ -4572,6 +4572,10 @@
           },
           {
             "type": "SYMBOL",
+            "name": "byref_type"
+          },
+          {
+            "type": "SYMBOL",
             "name": "list_type"
           },
           {
@@ -4626,6 +4630,10 @@
           {
             "type": "SYMBOL",
             "name": "nullable_type"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "byref_type"
           },
           {
             "type": "SYMBOL",
@@ -4687,6 +4695,10 @@
           {
             "type": "SYMBOL",
             "name": "nullable_type"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "byref_type"
           },
           {
             "type": "SYMBOL",
@@ -5026,6 +5038,23 @@
           ]
         }
       ]
+    },
+    "byref_type": {
+      "type": "PREC_LEFT",
+      "value": 4,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_type"
+          },
+          {
+            "type": "STRING",
+            "value": "&"
+          }
+        ]
+      }
     },
     "nullable_type": {
       "type": "PREC_DYNAMIC",

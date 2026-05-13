@@ -5044,6 +5044,29 @@ extern int SendMessage(nativeint hWnd, int msg, nativeint wParam, nativeint lPar
       (identifier))))
 
 ================================================================================
+extern declaration with byref parameter
+================================================================================
+
+extern bool GetMonitorInfo(MONITORINFOEX& info)
+
+--------------------------------------------------------------------------------
+
+(file
+  (extern_binding
+    (simple_type
+      (long_identifier
+        (identifier)))
+    (identifier)
+    (extern_param
+      (byref_type
+        (simple_type
+          (long_identifier
+            (identifier))))
+      (identifier))))
+
+
+
+================================================================================
 and! in computation expression
 ================================================================================
 

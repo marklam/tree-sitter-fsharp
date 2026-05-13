@@ -1320,6 +1320,7 @@ module.exports = grammar({
           $.compound_type,
           $.postfix_type,
           $.nullable_type,
+          $.byref_type,
           $.list_type,
           $.static_type,
           $.type_argument,
@@ -1343,6 +1344,7 @@ module.exports = grammar({
           $.paren_type,
           $.postfix_type,
           $.nullable_type,
+          $.byref_type,
           $.list_type,
           $.static_type,
           $.type_argument,
@@ -1367,6 +1369,7 @@ module.exports = grammar({
           $.compound_type,
           $.postfix_type,
           $.nullable_type,
+          $.byref_type,
           $.list_type,
           $.static_type,
           $.type_argument,
@@ -1422,6 +1425,9 @@ module.exports = grammar({
     postfix_type: ($) => prec.left(4, seq($._type, $.long_identifier)),
     // 1D `T[]`, 2D `T[,]`, 3D `T[,,]` … N-dimensional arrays.
     list_type: ($) => seq($._type, choice("[]", "[,]", "[,,]", "[,,,]")),
+    // F# byref postfix: `T&` is `byref<T>`. Common in P/Invoke extern
+    // signatures and ref-passing APIs.
+    byref_type: ($) => prec.left(4, seq($._type, "&")),
     // F# 9 nullable reference types: `T|null` means T-or-null.
     // Negative dynamic precedence so contexts that also use `|`
     // (union cases, match rules) win when both are possible.
