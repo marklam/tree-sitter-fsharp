@@ -1621,6 +1621,35 @@ type A = {
                 (identifier)))))))))
 
 ================================================================================
+type declaration with trailing semicolon
+================================================================================
+
+type [<Measure>] i;
+
+let x = 1
+
+--------------------------------------------------------------------------------
+
+(file
+  (type_definition
+    (type_declaration
+      (type_name
+        (attributes
+          (attribute
+            (simple_type
+              (long_identifier
+                (identifier)))))
+        (identifier))))
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (const
+        (int)))))
+
+================================================================================
 type with measure product (space-separated)
 ================================================================================
 

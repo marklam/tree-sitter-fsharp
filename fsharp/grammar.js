@@ -1707,8 +1707,11 @@ module.exports = grammar({
       ),
 
     // Bare type declaration with no body, used for e.g. [<Measure>] type kg
-    // _type_decl_newline fires only at end-of-line, making this unambiguous with anon_type_defn
-    type_declaration: ($) => seq($.type_name, $._type_decl_newline),
+    // _type_decl_newline fires only at end-of-line, making this unambiguous with anon_type_defn.
+    // Optional trailing `;` is allowed for explicit statement termination (e.g.
+    // `type [<Measure>] i;`), which the F# compiler accepts.
+    type_declaration: ($) =>
+      seq($.type_name, optional(";"), $._type_decl_newline),
 
     type_name: ($) =>
       prec(
