@@ -1420,7 +1420,8 @@ module.exports = grammar({
       prec.right(seq($._type, repeat1(prec.right(seq("*", $._type))))),
     struct_type: ($) => seq("struct", $.paren_type),
     postfix_type: ($) => prec.left(4, seq($._type, $.long_identifier)),
-    list_type: ($) => seq($._type, "[]"),
+    // 1D `T[]`, 2D `T[,]`, 3D `T[,,]` … N-dimensional arrays.
+    list_type: ($) => seq($._type, choice("[]", "[,]", "[,,]", "[,,,]")),
     // F# 9 nullable reference types: `T|null` means T-or-null.
     // Negative dynamic precedence so contexts that also use `|`
     // (union cases, match rules) win when both are possible.

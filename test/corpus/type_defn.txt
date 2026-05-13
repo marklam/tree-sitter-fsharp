@@ -1620,6 +1620,43 @@ type A = {
                 (identifier)))))))))
 
 ================================================================================
+type with multi-dimensional array
+================================================================================
+
+type A = {
+  Pixels : int[,]
+  Voxels : float[,,]
+  Tensor : double[,,,]
+}
+
+--------------------------------------------------------------------------------
+
+(file
+  (type_definition
+    (record_type_defn
+      (type_name
+        (identifier))
+      (record_fields
+        (record_field
+          (identifier)
+          (list_type
+            (simple_type
+              (long_identifier
+                (identifier)))))
+        (record_field
+          (identifier)
+          (list_type
+            (simple_type
+              (long_identifier
+                (identifier)))))
+        (record_field
+          (identifier)
+          (list_type
+            (simple_type
+              (long_identifier
+                (identifier)))))))))
+
+================================================================================
 type with nullable reference type
 ================================================================================
 
