@@ -5079,6 +5079,36 @@ let x = ImageData<1, uint16>(1, 2)
             (int)))))))
 
 ================================================================================
+use binding with type ascription
+================================================================================
+
+let f () =
+    use s : Stream = openStream ()
+    ()
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (argument_patterns
+          (const
+            (unit))))
+      body: (declaration_expression
+        (identifier)
+        (simple_type
+          (long_identifier
+            (identifier)))
+        (application_expression
+          (long_identifier_or_op
+            (identifier))
+          (unit))
+        in: (const
+          (unit))))))
+
+================================================================================
 extern declaration with byref parameter
 ================================================================================
 

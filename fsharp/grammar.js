@@ -890,7 +890,13 @@ module.exports = grammar({
     declaration_expression: ($) =>
       seq(
         choice(
-          seq(choice("use", "use!"), $.identifier, "=", $._expression_block_for_let),
+          seq(
+            choice("use", "use!"),
+            $.identifier,
+            optional(seq(":", $._type)),
+            "=",
+            $._expression_block_for_let,
+          ),
           seq(
             $.function_or_value_defn,
             repeat($.and_bang),
@@ -1120,7 +1126,13 @@ module.exports = grammar({
     comp_declaration_expression: ($) =>
       seq(
         choice(
-          seq(choice("use", "use!"), $.identifier, "=", $._expression_block_for_let),
+          seq(
+            choice("use", "use!"),
+            $.identifier,
+            optional(seq(":", $._type)),
+            "=",
+            $._expression_block_for_let,
+          ),
           seq(
             $.function_or_value_defn,
             repeat($.and_bang),
