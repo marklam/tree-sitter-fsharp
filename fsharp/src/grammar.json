@@ -6449,6 +6449,15 @@
         {
           "type": "SYMBOL",
           "name": "type_extension_elements"
+        },
+        {
+          "type": "ALIAS",
+          "content": {
+            "type": "SYMBOL",
+            "name": "preproc_if_in_class_definition"
+          },
+          "named": true,
+          "value": "preproc_if"
         }
       ]
     },
@@ -10755,6 +10764,10 @@
     [
       "declaration_expression",
       "_comp_or_range_expression"
+    ],
+    [
+      "_class_type_body_inner",
+      "_type_defn_elements"
     ],
     [
       "rules"

@@ -108,6 +108,7 @@ module.exports = grammar({
     [$._module_elem, $.preproc_if_in_expression],
     [$._module_expression, $._expression],
     [$.declaration_expression, $._comp_or_range_expression],
+    [$._class_type_body_inner, $._type_defn_elements],
     [$.rules],
     [$.prefixed_expression, $._low_prec_app, $.infix_expression],
     [$._type, $._argument_type],
@@ -1613,7 +1614,11 @@ module.exports = grammar({
       ),
 
     _class_type_body_inner: ($) =>
-      choice($.class_inherits_decl, $.type_extension_elements),
+      choice(
+        $.class_inherits_decl,
+        $.type_extension_elements,
+        alias($.preproc_if_in_class_definition, $.preproc_if),
+      ),
 
     _class_type_body: ($) =>
       seq(
