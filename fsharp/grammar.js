@@ -877,11 +877,44 @@ module.exports = grammar({
       seq(
         $._indent,
         choice(
+          // NEWLINE-separated list-comprehension form, allowing
+          // `yield ...`, `for x in y -> z`, ranges, and comp `let` to
+          // appear as siblings:
+          //   [ yield a
+          //     yield b
+          //     for x in y -> z
+          //     yield w ]
+          // Elements use `_module_expression` (not `_expression`) so an
+          // intra-element NEWLINE doesn't get folded into a `sequential_
+          // expression` that swallows the next sibling. Tried before
+          // `_list_elements` so the comp-form path wins when the body
+          // contains any non-`_module_expression` construct.
+          prec.right(
+            PREC.COMMA + 200,
+            seq(
+              optional($._newline),
+              $._list_comp_element,
+              repeat(
+                prec.right(
+                  PREC.COMMA + 200,
+                  seq(alias($._newline, ";"), $._list_comp_element),
+                ),
+              ),
+              optional($._newline),
+            ),
+          ),
           $._list_elements,
-          seq(optional($._newline), $._comp_or_range_expression),
           seq(optional($._newline), $.slice_ranges),
         ),
         $._dedent,
+      ),
+
+    _list_comp_element: ($) =>
+      choice(
+        alias($.comp_declaration_expression, $.declaration_expression),
+        $.short_comp_expression,
+        $.range_expression,
+        $._module_expression,
       ),
 
     list_expression: ($) => seq("[", optional($._list_element), "]"),
@@ -1168,7 +1201,7 @@ module.exports = grammar({
     //   ),
 
     short_comp_expression: ($) =>
-      seq("for", $._pattern, "in", $._expression_or_range, "->", $._expression),
+      seq("for", $._pattern, "in", $._expression_or_range, "->", $._expression_block),
 
     // comp_rule: $ =>
     //   seq(
