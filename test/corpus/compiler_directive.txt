@@ -777,3 +777,41 @@ type Foo() =
                 (identifier))
               (const
                 (string)))))))))
+
+================================================================================
+preproc_if with multiple module elements at top level
+================================================================================
+
+namespace X
+
+#if DEBUG
+open System
+open System.Reactive.Linq
+#endif
+
+let x = 1
+
+--------------------------------------------------------------------------------
+
+(file
+  (namespace
+    (long_identifier
+      (identifier))
+    (preproc_if
+      (identifier)
+      (import_decl
+        (long_identifier
+          (identifier)))
+      (import_decl
+        (long_identifier
+          (identifier)
+          (identifier)
+          (identifier))))
+    (declaration_expression
+      (function_or_value_defn
+        (value_declaration_left
+          (identifier_pattern
+            (long_identifier_or_op
+              (identifier))))
+        (const
+          (int))))))

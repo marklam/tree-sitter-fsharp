@@ -2329,7 +2329,19 @@ module.exports = grammar({
 
     ...preprocIf(
       "",
-      ($) => choice($._module_elem, alias($._preproc_toplevel_module, $.named_module)),
+      // Allow multiple module elements inside `#if … #endif` at top level:
+      //   #if DEBUG
+      //   open System
+      //   open System.Reactive.Linq
+      //   #endif
+      // The single-element form would only have matched the first `open`.
+      // The named_module alternative is kept for the `#if A \n module B =
+      // … \n #endif` case (a preproc-wrapped partial module declaration).
+      ($) =>
+        choice(
+          repeat1(seq(optional($._newline), $._module_elem)),
+          alias($._preproc_toplevel_module, $.named_module),
+        ),
     ),
     ...preprocIf(
       "_in_expression",
