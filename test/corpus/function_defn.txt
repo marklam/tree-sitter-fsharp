@@ -455,6 +455,44 @@ let freq: float<1/s> = 1.0
         (float)))))
 
 ================================================================================
+inline value binding with type arguments and constraint, no args
+================================================================================
+
+let inline f<'T when 'T : null> : 'T -> 'T option = fun _ -> None
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (long_identifier
+              (identifier))))
+        (type_arguments
+          (type_argument_defn
+            (type_argument
+              (identifier)))
+          (type_argument_constraints
+            (constraint
+              (type_argument
+                (identifier))))))
+      (function_type
+        (type_argument
+          (identifier))
+        (postfix_type
+          (type_argument
+            (identifier))
+          (long_identifier
+            (identifier))))
+      body: (fun_expression
+        (argument_patterns)
+        (long_identifier_or_op
+          (long_identifier
+            (identifier)))))))
+
+================================================================================
 let with attributes, inline, type arguments
 ================================================================================
 

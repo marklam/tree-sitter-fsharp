@@ -385,6 +385,7 @@ module.exports = grammar({
         2,
         seq(
           optional("mutable"),
+          optional("inline"),
           optional($.access_modifier),
           $._pattern,
           optional($.type_arguments),
