@@ -8730,15 +8730,18 @@
       "members": [
         {
           "type": "SYMBOL",
-          "name": "_simple_string_char"
+          "name": "_inside_string_marker"
         },
         {
-          "type": "SYMBOL",
-          "name": "_non_escape_char"
-        },
-        {
-          "type": "STRING",
-          "value": "\\"
+          "type": "IMMEDIATE_TOKEN",
+          "content": {
+            "type": "PREC",
+            "value": 1,
+            "content": {
+              "type": "PATTERN",
+              "value": "[^\"]"
+            }
+          }
         },
         {
           "type": "PATTERN",

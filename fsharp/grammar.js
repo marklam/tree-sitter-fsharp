@@ -2075,8 +2075,16 @@ module.exports = grammar({
 
     string: ($) => choice($._string_literal, $.format_string),
 
+    // Verbatim strings (`@"…"`) allow any character except `"` (which is
+    // escaped as `""`) — including tabs and other whitespace that the
+    // regular `_simple_string_char` excludes. Use a permissive immediate
+    // regex here instead of reusing `_simple_string_char`.
     _verbatim_string_char: ($) =>
-      choice($._simple_string_char, $._non_escape_char, "\\", /\"\"/),
+      choice(
+        $._inside_string_marker,
+        token.immediate(prec(1, /[^"]/)),
+        /\"\"/,
+      ),
     verbatim_string: ($) =>
       seq('@"', repeat($._verbatim_string_char), token.immediate('"')),
     bytearray: ($) => seq('"', repeat($._string_char), token.immediate('"B')),

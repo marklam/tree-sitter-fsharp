@@ -35,6 +35,28 @@ let x = @"\"
         (verbatim_string)))))
 
 ================================================================================
+verbatim string spanning newlines with tabs
+================================================================================
+
+let x = @"CREATE TABLE [Supplier]
+	(
+		[Id] TEXT NOT NULL,
+		[Name] TEXT NOT NULL
+	);"
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (const
+        (verbatim_string)))))
+
+================================================================================
 int
 ================================================================================
 
