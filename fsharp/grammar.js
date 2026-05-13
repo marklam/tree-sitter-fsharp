@@ -1318,6 +1318,7 @@ module.exports = grammar({
           $.function_type,
           $.compound_type,
           $.postfix_type,
+          $.nullable_type,
           $.list_type,
           $.static_type,
           $.type_argument,
@@ -1340,6 +1341,7 @@ module.exports = grammar({
           $.generic_type,
           $.paren_type,
           $.postfix_type,
+          $.nullable_type,
           $.list_type,
           $.static_type,
           $.type_argument,
@@ -1363,6 +1365,7 @@ module.exports = grammar({
           $.paren_type,
           $.compound_type,
           $.postfix_type,
+          $.nullable_type,
           $.list_type,
           $.static_type,
           $.type_argument,
@@ -1417,6 +1420,10 @@ module.exports = grammar({
     struct_type: ($) => seq("struct", $.paren_type),
     postfix_type: ($) => prec.left(4, seq($._type, $.long_identifier)),
     list_type: ($) => seq($._type, "[]"),
+    // F# 9 nullable reference types: `T|null` means T-or-null.
+    // Negative dynamic precedence so contexts that also use `|`
+    // (union cases, match rules) win when both are possible.
+    nullable_type: ($) => prec.dynamic(-100, seq($._type, "|", "null")),
     static_type: ($) => prec(10, seq($._type, $.type_arguments)),
     constrained_type: ($) => prec.right(seq($.type_argument, ":>", $._type)),
     flexible_type: ($) => prec.right(seq("#", $._type)),

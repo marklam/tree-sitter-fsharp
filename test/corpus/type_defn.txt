@@ -1620,6 +1620,36 @@ type A = {
                 (identifier)))))))))
 
 ================================================================================
+type with nullable reference type
+================================================================================
+
+type A = {
+  Name : string|null
+  Other : MyType|null
+}
+
+--------------------------------------------------------------------------------
+
+(file
+  (type_definition
+    (record_type_defn
+      (type_name
+        (identifier))
+      (record_fields
+        (record_field
+          (identifier)
+          (nullable_type
+            (simple_type
+              (long_identifier
+                (identifier)))))
+        (record_field
+          (identifier)
+          (nullable_type
+            (simple_type
+              (long_identifier
+                (identifier)))))))))
+
+================================================================================
 type with static inline member
 ================================================================================
 

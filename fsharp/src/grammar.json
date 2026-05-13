@@ -4556,6 +4556,10 @@
           },
           {
             "type": "SYMBOL",
+            "name": "nullable_type"
+          },
+          {
+            "type": "SYMBOL",
             "name": "list_type"
           },
           {
@@ -4606,6 +4610,10 @@
           {
             "type": "SYMBOL",
             "name": "postfix_type"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "nullable_type"
           },
           {
             "type": "SYMBOL",
@@ -4663,6 +4671,10 @@
           {
             "type": "SYMBOL",
             "name": "postfix_type"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "nullable_type"
           },
           {
             "type": "SYMBOL",
@@ -4985,6 +4997,27 @@
           "value": "[]"
         }
       ]
+    },
+    "nullable_type": {
+      "type": "PREC_DYNAMIC",
+      "value": -100,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "_type"
+          },
+          {
+            "type": "STRING",
+            "value": "|"
+          },
+          {
+            "type": "STRING",
+            "value": "null"
+          }
+        ]
+      }
     },
     "static_type": {
       "type": "PREC",
