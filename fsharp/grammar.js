@@ -113,6 +113,7 @@ module.exports = grammar({
     [$._module_elem, $.preproc_if_in_expression],
     [$._module_expression, $._expression],
     [$.declaration_expression, $._comp_or_range_expression],
+    [$._srtp_type_argument, $._static_type_identifier],
     [$._class_type_body_inner, $._type_defn_elements],
     [$.rules],
     [$.prefixed_expression, $._low_prec_app, $.infix_expression],
@@ -708,21 +709,32 @@ module.exports = grammar({
       ),
 
     prefixed_expression: ($) =>
-      seq(
-        choice(
-          "return",
-          "return!",
-          "yield",
-          "yield!",
-          "lazy",
-          "assert",
-          "upcast",
-          "downcast",
-          "new",
-          "fixed",
-          $.prefix_op,
+      choice(
+        // `new 'T (...)` — construct a value of a typar-typed parameter,
+        // typical for `'T : (new : unit -> 'T)` constructor-constrained
+        // generic methods. Special-cased because typars aren't valid in
+        // expression position generally. The call args may be `()` (the
+        // `unit` token) or a parenthesized expression.
+        prec.right(
+          PREC.PREFIX_EXPR,
+          seq("new", $.type_argument, choice($.unit, $.paren_expression)),
         ),
-        prec.right(PREC.PREFIX_EXPR, $._expression),
+        seq(
+          choice(
+            "return",
+            "return!",
+            "yield",
+            "yield!",
+            "lazy",
+            "assert",
+            "upcast",
+            "downcast",
+            "new",
+            "fixed",
+            $.prefix_op,
+          ),
+          prec.right(PREC.PREFIX_EXPR, $._expression),
+        ),
       ),
 
     typecast_expression: ($) =>

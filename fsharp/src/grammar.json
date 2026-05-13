@@ -2568,64 +2568,99 @@
       ]
     },
     "prefixed_expression": {
-      "type": "SEQ",
+      "type": "CHOICE",
       "members": [
-        {
-          "type": "CHOICE",
-          "members": [
-            {
-              "type": "STRING",
-              "value": "return"
-            },
-            {
-              "type": "STRING",
-              "value": "return!"
-            },
-            {
-              "type": "STRING",
-              "value": "yield"
-            },
-            {
-              "type": "STRING",
-              "value": "yield!"
-            },
-            {
-              "type": "STRING",
-              "value": "lazy"
-            },
-            {
-              "type": "STRING",
-              "value": "assert"
-            },
-            {
-              "type": "STRING",
-              "value": "upcast"
-            },
-            {
-              "type": "STRING",
-              "value": "downcast"
-            },
-            {
-              "type": "STRING",
-              "value": "new"
-            },
-            {
-              "type": "STRING",
-              "value": "fixed"
-            },
-            {
-              "type": "SYMBOL",
-              "name": "prefix_op"
-            }
-          ]
-        },
         {
           "type": "PREC_RIGHT",
           "value": 15,
           "content": {
-            "type": "SYMBOL",
-            "name": "_expression"
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "new"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "type_argument"
+              },
+              {
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "unit"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "paren_expression"
+                  }
+                ]
+              }
+            ]
           }
+        },
+        {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "CHOICE",
+              "members": [
+                {
+                  "type": "STRING",
+                  "value": "return"
+                },
+                {
+                  "type": "STRING",
+                  "value": "return!"
+                },
+                {
+                  "type": "STRING",
+                  "value": "yield"
+                },
+                {
+                  "type": "STRING",
+                  "value": "yield!"
+                },
+                {
+                  "type": "STRING",
+                  "value": "lazy"
+                },
+                {
+                  "type": "STRING",
+                  "value": "assert"
+                },
+                {
+                  "type": "STRING",
+                  "value": "upcast"
+                },
+                {
+                  "type": "STRING",
+                  "value": "downcast"
+                },
+                {
+                  "type": "STRING",
+                  "value": "new"
+                },
+                {
+                  "type": "STRING",
+                  "value": "fixed"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "prefix_op"
+                }
+              ]
+            },
+            {
+              "type": "PREC_RIGHT",
+              "value": 15,
+              "content": {
+                "type": "SYMBOL",
+                "name": "_expression"
+              }
+            }
+          ]
         }
       ]
     },
@@ -10864,6 +10899,10 @@
     [
       "declaration_expression",
       "_comp_or_range_expression"
+    ],
+    [
+      "_srtp_type_argument",
+      "_static_type_identifier"
     ],
     [
       "_class_type_body_inner",

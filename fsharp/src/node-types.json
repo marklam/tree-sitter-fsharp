@@ -3344,6 +3344,14 @@
         {
           "type": "prefix_op",
           "named": true
+        },
+        {
+          "type": "type_argument",
+          "named": true
+        },
+        {
+          "type": "unit",
+          "named": true
         }
       ]
     }

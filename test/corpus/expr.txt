@@ -5140,3 +5140,24 @@ let xs =
             (long_identifier
               (identifier)
               (identifier))))))))
+
+================================================================================
+new constructor on typar
+================================================================================
+
+let mk () = new 'T()
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (argument_patterns
+          (const
+            (unit))))
+      (prefixed_expression
+        (type_argument
+          (identifier))
+        (unit)))))
