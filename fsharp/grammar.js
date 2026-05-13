@@ -1967,7 +1967,14 @@ module.exports = grammar({
               optional($.access_modifier),
               $.member_signature,
             ),
-            seq("member", "val", $.property_or_ident, $._val_property_defn),
+            seq(
+              "member",
+              "val",
+              // Per-property access modifier: `member val internal X = …`.
+              optional($.access_modifier),
+              $.property_or_ident,
+              $._val_property_defn,
+            ),
             seq("override", optional($.access_modifier), $.method_or_prop_defn),
             seq("default", optional($.access_modifier), $.method_or_prop_defn),
             seq(
