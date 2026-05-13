@@ -4850,12 +4850,36 @@
         ]
       }
     },
+    "measure_product": {
+      "type": "PREC_LEFT",
+      "value": 4,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "measure_atom"
+          },
+          {
+            "type": "REPEAT1",
+            "content": {
+              "type": "SYMBOL",
+              "name": "measure_atom"
+            }
+          }
+        ]
+      }
+    },
     "_measure_operand": {
       "type": "CHOICE",
       "members": [
         {
           "type": "SYMBOL",
           "name": "measure_power"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "measure_product"
         },
         {
           "type": "SYMBOL",
@@ -4898,6 +4922,10 @@
         {
           "type": "SYMBOL",
           "name": "measure_power"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "measure_product"
         },
         {
           "type": "SYMBOL",

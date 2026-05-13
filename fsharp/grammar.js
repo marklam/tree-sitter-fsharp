@@ -1430,9 +1430,15 @@ module.exports = grammar({
 
     measure_power: ($) => prec.right(6, seq($.measure_atom, "^", $.int)),
 
+    // F# measure product: space-separated measure atoms multiply.
+    // Example: `Size<'Ta 'Tb>` ≡ `Size<'Ta * 'Tb>` for measures.
+    measure_product: ($) =>
+      prec.left(4, seq($.measure_atom, repeat1($.measure_atom))),
+
     _measure_operand: ($) =>
       choice(
         $.measure_power,
+        $.measure_product,
         $.measure_atom,
         $.compound_type,
       ),
@@ -1443,6 +1449,7 @@ module.exports = grammar({
       choice(
         $.measure_quotient,
         $.measure_power,
+        $.measure_product,
         // Bare measure atoms — supports literal `1` (dimensionless),
         // typars, and simple type names used as units of measure:
         //   SizeExact<1>, float<m>, int<'u>

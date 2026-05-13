@@ -1620,6 +1620,37 @@ type A = {
                 (identifier)))))))))
 
 ================================================================================
+type with measure product (space-separated)
+================================================================================
+
+let f : Size<'Ta 'Tb> = ()
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      (generic_type
+        (long_identifier
+          (identifier))
+        (type_attributes
+          (type_attribute
+            (measure
+              (measure_product
+                (measure_atom
+                  (type_argument
+                    (identifier)))
+                (measure_atom
+                  (type_argument
+                    (identifier))))))))
+      body: (const
+        (unit)))))
+
+================================================================================
 type with multi-dimensional array
 ================================================================================
 
