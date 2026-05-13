@@ -1995,7 +1995,13 @@ module.exports = grammar({
       ),
 
     property_accessor: ($) =>
-      seq(choice("get", "set"), $._property_accessor_body),
+      seq(
+        // F# allows per-accessor access modifiers, e.g.
+        // `member this.X with get () = … and private set v = …`.
+        optional($.access_modifier),
+        choice("get", "set"),
+        $._property_accessor_body,
+      ),
 
     _property_defn: ($) =>
       prec.left(
