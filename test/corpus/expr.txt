@@ -2476,6 +2476,32 @@ let x =
                 (unit)))))))))
 
 ================================================================================
+match expression single arm inline
+================================================================================
+
+let f x = match x with | 1 -> "one"
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (function_declaration_left
+        (identifier)
+        (argument_patterns
+          (long_identifier
+            (identifier))))
+      body: (match_expression
+        (long_identifier_or_op
+          (identifier))
+        (rules
+          (rule
+            pattern: (const
+              (int))
+            block: (const
+              (string))))))))
+
+================================================================================
 match expression followed by if expression
 ================================================================================
 

@@ -827,7 +827,11 @@ module.exports = grammar({
         $._expression,
         optional($._newline),
         "with",
-        choice(seq($._newline, $.rules), scoped($.rules, $._indent, $._dedent)),
+        choice(
+          seq($._newline, $.rules),
+          scoped($.rules, $._indent, $._dedent),
+          $.rules,
+        ),
       ),
 
     function_expression: ($) =>
