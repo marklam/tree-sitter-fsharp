@@ -2045,6 +2045,10 @@
           "named": true
         },
         {
+          "type": "attributes",
+          "named": true
+        },
+        {
           "type": "identifier",
           "named": true
         },

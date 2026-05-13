@@ -364,6 +364,13 @@ module.exports = grammar({
       prec.left(
         3,
         seq(
+          // F# allows `let [<Attr>] inline name<'T> args = …` where the
+          // attribute is INSIDE the let binding (between `let` and the
+          // function name). `attribute_pattern` covers the
+          // value-declaration case but `_pattern` doesn't include
+          // `inline` + type_arguments, so the function-decl shape needs
+          // its own optional attributes slot.
+          optional($.attributes),
           optional("inline"),
           optional($.access_modifier),
           prec(100, $._identifier_or_op),
