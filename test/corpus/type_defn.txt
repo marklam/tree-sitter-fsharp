@@ -3081,6 +3081,51 @@ type T = U
           (identifier))))))
 
 ================================================================================
+DU with off-side cases inside a module
+================================================================================
+
+namespace Test
+
+module M =
+
+    type X =
+    | A of int
+
+    type Y =
+        { A : int }
+
+--------------------------------------------------------------------------------
+
+(file
+  (namespace
+    (long_identifier
+      (identifier))
+    (module_defn
+      (identifier)
+      (type_definition
+        (union_type_defn
+          (type_name
+            (identifier))
+          (union_type_cases
+            (union_type_case
+              (identifier)
+              (union_type_fields
+                (union_type_field
+                  (simple_type
+                    (long_identifier
+                      (identifier)))))))))
+      (type_definition
+        (record_type_defn
+          (type_name
+            (identifier))
+          (record_fields
+            (record_field
+              (identifier)
+              (simple_type
+                (long_identifier
+                  (identifier))))))))))
+
+================================================================================
 Test abstract member with tuple return type
 ================================================================================
 

@@ -1861,8 +1861,14 @@ module.exports = grammar({
           $.type_name,
           "=",
           choice(
+            // Indented body: `type X = INDENT | A ... DEDENT`
             scoped($._union_type_defn_inner, $._indent, $._dedent),
+            // Same-line body: `type X = A`
             $._union_type_defn_inner,
+            // Off-side body: cases on a new line at the SAME column as
+            // `type` (F# allows `type X =\n| A\n| B` where `|` aligns
+            // with `type`). No INDENT fires, but a NEWLINE does.
+            seq($._newline, $._union_type_defn_inner),
           ),
         ),
       ),

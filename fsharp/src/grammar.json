@@ -7276,6 +7276,19 @@
               {
                 "type": "SYMBOL",
                 "name": "_union_type_defn_inner"
+              },
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "SYMBOL",
+                    "name": "_newline"
+                  },
+                  {
+                    "type": "SYMBOL",
+                    "name": "_union_type_defn_inner"
+                  }
+                ]
               }
             ]
           }
