@@ -425,6 +425,31 @@ let speed: float<(m/s)> = 1.0
         (float)))))
 
 ================================================================================
+typed value with implicit reciprocal measure
+================================================================================
+
+let speed = 1.0</s>
+
+--------------------------------------------------------------------------------
+
+(file
+  (declaration_expression
+    (function_or_value_defn
+      (value_declaration_left
+        (identifier_pattern
+          (long_identifier_or_op
+            (identifier))))
+      body: (typed_expression
+        (const
+          (float))
+        (measure
+          (measure_reciprocal
+            (measure_atom
+              (simple_type
+                (long_identifier
+                  (identifier))))))))))
+
+================================================================================
 typed value with dimensionless reciprocal measure
 ================================================================================
 

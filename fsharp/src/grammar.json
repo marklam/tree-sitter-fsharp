@@ -4912,12 +4912,33 @@
         ]
       }
     },
+    "measure_reciprocal": {
+      "type": "PREC_LEFT",
+      "value": 5,
+      "content": {
+        "type": "SEQ",
+        "members": [
+          {
+            "type": "STRING",
+            "value": "/"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "_measure_operand"
+          }
+        ]
+      }
+    },
     "measure": {
       "type": "CHOICE",
       "members": [
         {
           "type": "SYMBOL",
           "name": "measure_quotient"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "measure_reciprocal"
         },
         {
           "type": "SYMBOL",

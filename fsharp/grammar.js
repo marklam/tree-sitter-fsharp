@@ -1459,9 +1459,14 @@ module.exports = grammar({
 
     measure_quotient: ($) => prec.left(5, seq($._measure_operand, "/", $._measure_operand)),
 
+    // Reciprocal measure with implicit `1` numerator: `</s>` ≡ `<1/s>`.
+    measure_reciprocal: ($) =>
+      prec.left(5, seq("/", $._measure_operand)),
+
     measure: ($) =>
       choice(
         $.measure_quotient,
+        $.measure_reciprocal,
         $.measure_power,
         $.measure_product,
         // Bare measure atoms — supports literal `1` (dimensionless),

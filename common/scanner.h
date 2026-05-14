@@ -146,6 +146,23 @@ static inline bool is_type_application_open(TSLexer *lexer) {
       if (c == '>') {
         return true;
       }
+      // '/' as the very first content char might be the F# measure-
+      // reciprocal form: `1.0</s>` ≡ `1.0<1/s>`. But `</>` (and longer
+      // `</X` ops) are also user-defined infix operators. Distinguish:
+      // after `/`, an identifier-like char means measure-reciprocal;
+      // otherwise it's an infix operator.
+      if (c == '/') {
+        advance(lexer);
+        int32_t after_slash = lexer->lookahead;
+        if (is_word_char(after_slash) || after_slash == '\'' ||
+            after_slash == '^' || after_slash == '_' ||
+            after_slash == '(') {
+          saw_type_arg_start = true;
+          continue;
+        }
+        // `</>`, `</=`, etc. — not a measure type.
+        return false;
+      }
       // Anything else as the first content char means this isn't a type
       // application — bail out so the grammar treats '<' as the start of an
       // infix operator instead.
