@@ -3081,6 +3081,38 @@ type T = U
           (identifier))))))
 
 ================================================================================
+Enum with off-side multi-line cases inside a module
+================================================================================
+
+namespace Test
+module M =
+    type X =
+    | A = 1
+    | B = 2
+
+--------------------------------------------------------------------------------
+
+(file
+  (namespace
+    (long_identifier
+      (identifier))
+    (module_defn
+      (identifier)
+      (type_definition
+        (enum_type_defn
+          (type_name
+            (identifier))
+          (enum_type_cases
+            (enum_type_case
+              (identifier)
+              (const
+                (int)))
+            (enum_type_case
+              (identifier)
+              (const
+                (int)))))))))
+
+================================================================================
 DU with off-side cases inside a module
 ================================================================================
 

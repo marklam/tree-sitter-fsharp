@@ -120,6 +120,7 @@ module.exports = grammar({
     [$._class_type_body_inner, $._type_defn_elements],
     [$.rules],
     [$.types, $.type_attribute],
+    [$.enum_type_cases],
     [$.prefixed_expression, $._low_prec_app, $.infix_expression],
     [$._type, $._argument_type],
     [$._type, $._curried_return_type],
@@ -1835,13 +1836,36 @@ module.exports = grammar({
         $.type_name,
         "=",
         choice(
+          // Indented body: `type X = INDENT | A = 1 ... DEDENT`
           scoped($.enum_type_cases, $._indent, $._dedent),
+          // Same-line body: `type X = A = 1`
           $.enum_type_cases,
+          // Off-side body: cases on a new line at the SAME column as
+          // `type` (mirrors fix-115 for unions; F# allows
+          // `type X =\n| A = 1\n| B = 2`).
+          seq($._newline, $.enum_type_cases),
         ),
       ),
 
     enum_type_cases: ($) =>
-      seq(optional("|"), $.enum_type_case, repeat(seq("|", $.enum_type_case))),
+      seq(
+        optional("|"),
+        $.enum_type_case,
+        // Allow optional newline before `|` so multi-line enums work:
+        //   type X =
+        //   | A = 1
+        //   | B = 2
+        // Use prec.right with high precedence so shift wins over
+        // module-body's NEWLINE-separated element joining — otherwise
+        // `| B` on a new line gets absorbed by `_module_body`'s repeat
+        // as a (failing) new module element.
+        repeat(
+          prec.right(
+            PREC.SEQ_EXPR + 2,
+            seq(optional($._newline), "|", $.enum_type_case),
+          ),
+        ),
+      ),
 
     // Enum cases can have attributes, like
     //   | [<Description("Recall in 3 months")>] RecallInThreeMonths = 1

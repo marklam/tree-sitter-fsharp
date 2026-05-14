@@ -7131,6 +7131,19 @@
             {
               "type": "SYMBOL",
               "name": "enum_type_cases"
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "_newline"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "enum_type_cases"
+                }
+              ]
             }
           ]
         }
@@ -7158,17 +7171,33 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "STRING",
-                "value": "|"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "enum_type_case"
-              }
-            ]
+            "type": "PREC_RIGHT",
+            "value": 3,
+            "content": {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "SYMBOL",
+                      "name": "_newline"
+                    },
+                    {
+                      "type": "BLANK"
+                    }
+                  ]
+                },
+                {
+                  "type": "STRING",
+                  "value": "|"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "enum_type_case"
+                }
+              ]
+            }
           }
         }
       ]
@@ -11364,6 +11393,9 @@
     [
       "types",
       "type_attribute"
+    ],
+    [
+      "enum_type_cases"
     ],
     [
       "prefixed_expression",
