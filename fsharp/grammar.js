@@ -601,7 +601,17 @@ module.exports = grammar({
         $.anon_record_expression,
         $.typecast_expression,
         $.declaration_expression,
-        $.do_expression,
+        // `do_expression` deliberately NOT in `_expression`. It IS in
+        // `_module_expression` (so `do …` works at module/let-body level)
+        // and `_comp_or_range_expression` (so `do!` works inside CEs).
+        //
+        // Why excluded here: `_low_prec_app` is `seq(_expression,
+        // _expression)`. If the right side could be a do_expression,
+        // then `while a && b do ()` parses as
+        // `while ( (a && b) (do ()) )` — the `do ()` gets eaten as an
+        // application argument to `b`, leaving no `do` for the while
+        // separator. F# semantically never allows `do x` as a function
+        // argument (always parenthesized at the call site).
         $.fun_expression,
         $.function_expression,
         $.sequential_expression,
@@ -1120,6 +1130,9 @@ module.exports = grammar({
         alias($.comp_declaration_expression, $.declaration_expression),
         $.short_comp_expression,
         $.range_expression,
+        // `do_expression` re-added here for CE bodies (`do!` inside async,
+        // task, seq, etc.). Removed from `_expression` — see comment there.
+        $.do_expression,
         $._expression,
       ),
 

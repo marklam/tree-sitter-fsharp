@@ -1153,18 +1153,17 @@ do
       (ce_expression
         (long_identifier_or_op
           (identifier))
-        (sequential_expression
-          (do_expression
-            (application_expression
-              (long_identifier_or_op
-                (long_identifier
-                  (identifier)
-                  (identifier)))
-              (const
-                (int))))
-          (prefixed_expression
+        (do_expression
+          (application_expression
+            (long_identifier_or_op
+              (long_identifier
+                (identifier)
+                (identifier)))
             (const
-              (unit))))))))
+              (int))))
+        (prefixed_expression
+          (const
+            (unit)))))))
 
 ================================================================================
 ce expression 3
@@ -1187,18 +1186,17 @@ let f = async {
       (ce_expression
         (long_identifier_or_op
           (identifier))
-        (sequential_expression
-          (do_expression
-            (application_expression
-              (long_identifier_or_op
-                (long_identifier
-                  (identifier)
-                  (identifier)))
-              (const
-                (int))))
-          (prefixed_expression
+        (do_expression
+          (application_expression
+            (long_identifier_or_op
+              (long_identifier
+                (identifier)
+                (identifier)))
             (const
-              (unit))))))))
+              (int))))
+        (prefixed_expression
+          (const
+            (unit)))))))
 
 ================================================================================
 ce expression 4
@@ -1221,18 +1219,17 @@ let f = async {
       (ce_expression
         (long_identifier_or_op
           (identifier))
-        (sequential_expression
-          (do_expression
-            (application_expression
-              (long_identifier_or_op
-                (long_identifier
-                  (identifier)
-                  (identifier)))
-              (const
-                (int))))
-          (prefixed_expression
+        (do_expression
+          (application_expression
+            (long_identifier_or_op
+              (long_identifier
+                (identifier)
+                (identifier)))
             (const
-              (unit))))))))
+              (int))))
+        (prefixed_expression
+          (const
+            (unit)))))))
 
 ================================================================================
 call function from list of functions

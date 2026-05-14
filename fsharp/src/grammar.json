@@ -2163,10 +2163,6 @@
         },
         {
           "type": "SYMBOL",
-          "name": "do_expression"
-        },
-        {
-          "type": "SYMBOL",
           "name": "fun_expression"
         },
         {
@@ -4278,6 +4274,10 @@
         {
           "type": "SYMBOL",
           "name": "range_expression"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "do_expression"
         },
         {
           "type": "SYMBOL",
